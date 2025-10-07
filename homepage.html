@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClinicFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="homepage.css" />
+  </head>
+  <body>
+    <main class="hero">
+      <div class="hero-inner">
+        <section class="hero-left">
+          <h1 class="title">ClinicFlow</h1>
+          <p class="subtitle">Streamlining Clinic Operations for Better Patient Care.</p>
+
+          <div class="cards">
+            <!-- Doctor Portal Card -->
+            <article class="card">
+              <div class="card-header">
+                <span class="icon" aria-hidden="true">
+                  <!-- Stethoscope Icon -->
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 3v6a4 4 0 1 0 8 0V3" />
+                    <path d="M12 17a5 5 0 0 0 10 0v-2" />
+                    <circle cx="22" cy="15" r="2" />
+                  </svg>
+                </span>
+                <h2 class="card-title">Doctor Portal</h2>
+              </div>
+              <p class="card-text">Access patient records and manage prescriptions.</p>
+              <button id="doctor-login" class="btn">
+                <span>Login</span>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </article>
+
+            <!-- Receptionist Portal Card -->
+            <article class="card">
+              <div class="card-header">
+                <span class="icon" aria-hidden="true">
+                  <!-- User Icon -->
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20a8 8 0 0 1 16 0" />
+                  </svg>
+                </span>
+                <h2 class="card-title">Receptionist Portal</h2>
+              </div>
+              <p class="card-text">Manage patient queue, registration, and billing.</p>
+              <button id="receptionist-login" class="btn">
+                <span>Login</span>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </article>
+          </div>
+        </section>
+
+        <aside class="hero-right" aria-label="Clinic photo">
+          <figure class="image-card">
+            <img src="assets/clinic-hall.svg" alt="Clinic hallway illustration" />
+          </figure>
+        </aside>
+      </div>
+    </main>
+
+    <script src="homepage.js" type="module"></script>
+  </body>
+  </html>

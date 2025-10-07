@@ -1,0 +1,26 @@
+{
+  "patients": [
+    {
+      "id": "cdde",
+      "pid": "CLF-001",
+      "name": "abc",
+      "age": 28,
+      "gender": "Male",
+      "phone": "1234567890",
+      "address": "abc",
+      "photo": null,
+      "registeredAt": "2025-09-29T06:14:48.468Z"
+    }
+  ],
+  "queue": [
+    {
+      "id": "e5dc",
+      "token": "A101",
+      "patientId": "CLF-001",
+      "patientName": "abc",
+      "doctorName": "—",
+      "status": "Completed",
+      "createdAt": 1759126497229
+    }
+  ]
+}

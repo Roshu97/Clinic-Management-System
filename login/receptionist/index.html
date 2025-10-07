@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Receptionist Portal - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="auth">
+      <div class="card">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20a8 8 0 0 1 16 0" />
+          </svg>
+        </div>
+        <h1 class="title">Receptionist Portal</h1>
+        <p class="desc">Login to manage patient queue, registration, and billing.<br/><small>(Use <b>receptionist@clinicflow.com</b> and password <b>password123</b>)</small></p>
+
+        <form id="login-form" class="form">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="m@example.com" required />
+
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="" required />
+
+          <button type="submit" class="btn">Login</button>
+          <div id="error-message" class="error-message"></div>
+        </form>
+      </div>
+    </main>
+    <script src="script.js" type="module"></script>
+  </body>
+  </html>
