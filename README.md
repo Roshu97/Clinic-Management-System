@@ -66,19 +66,19 @@ This project uses Firebase for its backend. You'll need to set up a Firebase pro
     };
     ```
 
-### 2. Run the Static Server
-This project uses a simple Java static server to serve the frontend files.
+### 2. Run the Frontend Server
+This project uses a Node.js server to serve the frontend files.
 
-1.  **Compile the Java Server:**
+1.  **Install Dependencies:**
     ```bash
-    javac StaticServer.java
+    npm install
     ```
 
 2.  **Run the Server:**
     ```bash
-    java StaticServer
+    npm start
     ```
-    The server will typically run on `http://localhost:9003`.
+    The server will typically run on `http://localhost:5000` (or another available port).
 
 ### 3. Usage
 Once the server is running and Firebase is configured:
