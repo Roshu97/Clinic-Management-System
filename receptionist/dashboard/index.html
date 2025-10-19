@@ -55,7 +55,7 @@
               <div class="panel-body">
                 <div class="actions">
                   <button class="btn primary" id="openQueueModal">Add Patient to Queue</button>
-                  <button class="btn">Call Next</button>
+                  <button class="btn" id="callNextBtn">Call Next</button>
                 </div>
                 <div class="queue-table">
                   <table>
@@ -111,8 +111,8 @@
                     <div>Room: <b>102</b></div>
                   </div>
                   <div class="serve-actions">
-                    <button class="btn">Pause</button>
-                    <button class="btn primary">Complete</button>
+                    <button class="btn" id="pauseServingBtn">Pause</button>
+                    <button class="btn primary" id="completeServingBtn">Complete</button>
                   </div>
                 </div>
               </div>
@@ -211,14 +211,14 @@
                     <td>John Carter</td>
                     <td>$80.00</td>
                     <td><span class="badge warning">Pending</span></td>
-                    <td><a class="btn primary" href="#">Collect</a></td>
+                    <td><a class="btn primary" id="collectBillBtn" href="#">Collect</a></td>
                   </tr>
                   <tr>
                     <td>B-002</td>
                     <td>Ana Gomez</td>
                     <td>$120.00</td>
                     <td><span class="badge secondary">Awaiting</span></td>
-                    <td><a class="btn" href="#">Send Reminder</a></td>
+                    <td><a class="btn" id="sendReminderBtn" href="#">Send Reminder</a></td>
                   </tr>
                 </tbody>
               </table>

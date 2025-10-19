@@ -1,5 +1,6 @@
-import { db, doc, getDoc } from './assets/firebase-init.js';
+import { db, doc, getDoc, auth } from './assets/firebase-init.js';
 import { addPatient, getAllPatients } from './assets/firestore-patient-data.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 // Simple interactions for the ClinicFlow homepage
 document.addEventListener('DOMContentLoaded', () => {
   const doctorBtn = document.getElementById('doctor-login');
@@ -51,7 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  exampleFirestoreInteraction();
+
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/auth.user
+      console.log("User is authenticated:", user.uid);
+      exampleFirestoreInteraction();
+    } else {
+      // User is signed out
+      console.log("User is not authenticated.");
+    }
+  });
 
   console.log("homepage.js is executing.");
 });

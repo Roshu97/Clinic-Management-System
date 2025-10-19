@@ -92,3 +92,30 @@ tbody td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size
   .sidebar { display: none; }
   .grid-2 { grid-template-columns: 1fr; }
 }
+
+.form input, .form select, .form input[type="file"] {
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 0 12px;
+  font-size: 14px;
+  background: #f8fafc;
+}
+.form input:focus, .form select:focus, .form input[type="file"]:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.18);
+  background: #fff;
+}
+
+.form input[type="file"] {
+  padding: 6px 12px;
+  height: auto;
+}
+
+.form-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}

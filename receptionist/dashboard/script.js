@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setQueue(queue);
       alert(`Added ${name} to queue (local) with token ${token}`);
     }
+    renderQueueTable(); // Refresh queue table after adding patient
   };
 
   openQueueModalBtn?.addEventListener('click', () => {
@@ -169,4 +170,139 @@ document.addEventListener('DOMContentLoaded', () => {
       addToQueue(pid, name);
     }
   });
+
+  const queueTableBody = document.querySelector('.queue-table tbody');
+
+  const renderQueueTable = () => {
+    if (!queueTableBody) return;
+    const queue = getQueue();
+    if (!queue.length) {
+      queueTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">No patients in queue.</td></tr>';
+      return;
+    }
+    queueTableBody.innerHTML = queue.map(entry => {
+      const statusClass = entry.status === 'Waiting' ? 'secondary' : 'warning';
+      return `<tr>
+        <td>${entry.token}</td>
+        <td>${entry.patientName}</td>
+        <td>${entry.doctorName}</td>
+        <td><span class="badge ${statusClass}">${entry.status}</span></td>
+        <td><a class="btn" href="#" data-action="remove-from-queue" data-token="${entry.token}">Remove</a></td>
+      </tr>`;
+    }).join('');
+  };
+
+  queueTableBody?.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.matches('[data-action="remove-from-queue"]')) {
+      const tokenToRemove = t.getAttribute('data-token');
+      if (tokenToRemove) {
+        let queue = getQueue();
+        queue = queue.filter(entry => entry.token !== tokenToRemove);
+        setQueue(queue);
+        renderQueueTable();
+        alert(`Token ${tokenToRemove} removed from queue.`);
+      }
+    }
+  });
+
+  let currentServingPatient = null;
+
+  const renderNowServing = (token, patientName, doctorName) => {
+    if (nowServingToken) nowServingToken.textContent = token || '—';
+    if (nowServingPatient) nowServingPatient.textContent = patientName || '—';
+    if (nowServingDoctor) nowServingDoctor.textContent = doctorName || '—';
+    currentServingPatient = token ? { token, patientName, doctorName } : null;
+    renderQueueTable(); // Refresh queue table after serving patient
+  };
+
+  callNextBtn?.addEventListener('click', async () => {
+    const queue = getQueue();
+    if (queue.length > 0) {
+      const nextPatient = queue.shift(); // Remove the first patient from the queue
+      setQueue(queue); // Update the queue in local storage
+      renderNowServing(nextPatient.token, nextPatient.patientName, nextPatient.doctorName);
+      alert(`Now serving: ${nextPatient.patientName} with token ${nextPatient.token}`);
+    } else {
+      alert('Patient queue is empty.');
+      renderNowServing(null, null, null); // Clear now serving display
+    }
+  });
+
+  const pauseServingBtn = document.getElementById('pauseServingBtn');
+  const completeServingBtn = document.getElementById('completeServingBtn');
+
+  pauseServingBtn?.addEventListener('click', () => {
+    if (currentServingPatient) {
+      const queue = getQueue();
+      queue.unshift(currentServingPatient); // Add back to the beginning of the queue
+      setQueue(queue);
+      alert(`${currentServingPatient.patientName} with token ${currentServingPatient.token} has been paused and returned to queue.`);
+      renderNowServing(null, null, null);
+    } else {
+      alert('No patient is currently being served.');
+    }
+  });
+
+  completeServingBtn?.addEventListener('click', () => {
+    if (currentServingPatient) {
+      alert(`${currentServingPatient.patientName} with token ${currentServingPatient.token} has completed their visit.`);
+      renderNowServing(null, null, null);
+    } else {
+      alert('No patient is currently being served.');
+    }
+  });
+
+  const billingTbody = document.querySelector('#panel-billing tbody');
+
+  const getBills = () => getJSON('clf_bills', [
+    { id: 'B-001', patient: 'John Carter', amount: '80.00', status: 'Pending' },
+    { id: 'B-002', patient: 'Ana Gomez', amount: '120.00', status: 'Awaiting' },
+  ]);
+  const setBills = (list) => setJSON('clf_bills', list);
+
+  const renderBills = () => {
+    if (!billingTbody) return;
+    const bills = getBills();
+    if (!bills.length) {
+      billingTbody.innerHTML = '<tr class="empty-row"><td colspan="5">No bills found.</td></tr>';
+      return;
+    }
+    billingTbody.innerHTML = bills.map(bill => {
+      const statusClass = bill.status === 'Pending' ? 'warning' : 'secondary';
+      return `<tr>
+        <td>${bill.id}</td>
+        <td>${bill.patient}</td>
+        <td>$${bill.amount}</td>
+        <td><span class="badge ${statusClass}">${bill.status}</span></td>
+        <td>
+          <a class="btn primary" data-action="collect-bill" data-id="${bill.id}" href="#">Collect</a>
+          <a class="btn" data-action="send-reminder" data-id="${bill.id}" href="#">Send Reminder</a>
+        </td>
+      </tr>`;
+    }).join('');
+  };
+
+  billingTbody?.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.matches('[data-action="collect-bill"]')) {
+      const billId = t.getAttribute('data-id');
+      if (billId) {
+        let bills = getBills();
+        bills = bills.filter(bill => bill.id !== billId);
+        setBills(bills);
+        renderBills();
+        alert(`Bill ${billId} collected.`);
+      }
+    } else if (t && t.matches('[data-action="send-reminder"]')) {
+      const billId = t.getAttribute('data-id');
+      if (billId) {
+        alert(`Reminder sent for bill ${billId}.`);
+      }
+    }
+  });
+
+  // Initial renders
+  renderQueueTable();
+  renderBills();
 });
