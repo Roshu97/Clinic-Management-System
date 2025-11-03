@@ -16,8 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = passwordInput.value;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = '/doctor/dashboard/';
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const idTokenResult = await user.getIdTokenResult();
+      const role = idTokenResult.claims.role;
+
+      if (role === 'doctor') {
+        window.location.href = '/doctor/dashboard/';
+      } else {
+        logger.warn('Unauthorized login attempt:', email, 'with role:', role);
+        errorMessage.textContent = 'Access Denied: You are not authorized to access the doctor portal.';
+        // Optionally, sign out the user if they are not a doctor
+        auth.signOut();
+      }
     } catch (error) {
       logger.error('Login error:', error.message);
       errorMessage.textContent = 'Invalid email or password.';
