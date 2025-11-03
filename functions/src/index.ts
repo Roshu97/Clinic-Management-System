@@ -10,6 +10,7 @@
 import {setGlobalOptions} from "firebase-functions";
 import {onRequest} from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
+import { setCustomUserRole } from './setRole';
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -30,3 +31,4 @@ setGlobalOptions({ maxInstances: 10 });
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+export { setCustomUserRole } from './setRole';
