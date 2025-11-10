@@ -11,6 +11,7 @@
     "strict": true,
     "target": "es2017",
     "skipLibCheck": true,
+    "isolatedModules": true,
     "esModuleInterop": true,
     "moduleResolution": "nodenext",
     "noUnusedLocals": true

@@ -32,8 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     Object.entries(panels).forEach(([key, el]) => el?.classList.toggle('hidden', key !== name));
   };
 
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      activateTab(button.dataset.tab);
+    });
   });
 
   // Sidebar links can switch tabs too
