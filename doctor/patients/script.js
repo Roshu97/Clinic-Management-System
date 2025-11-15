@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const addPatientModal = document.getElementById('addPatientModal');
   const closeButton = addPatientModal.querySelector('.close-button');
   const addPatientForm = document.getElementById('addPatientForm');
+  const tbody = document.getElementById('patientsTbody');
+  const searchInput = document.getElementById('searchInput');
 
   const getPatients = async () => {
     try {
@@ -64,12 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      await addPatient(newPatient);
-      logger.info('Patient added successfully:', newPatient);
+      await addPatient(patientData);
+      logger.info('Patient added successfully:', patientData);
       alert('Patient added successfully!');
       addPatientForm.reset();
       addPatientModal.style.display = 'none';
-      loadPatients(); // Reload patients to display new entry
+      const all = await getPatients();
+      render(all);
     } catch (error) {
       logger.error('Error adding patient:', error);
       console.error('Error adding patient:', error);
