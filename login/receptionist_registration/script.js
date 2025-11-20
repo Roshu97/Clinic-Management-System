@@ -1,4 +1,4 @@
-import { auth } from '../../../assets/firebase-init.js';
+import { auth } from '../../assets/firebase-init.js';
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 document.getElementById('receptionistRegistrationForm').addEventListener('submit', async function(event) {
