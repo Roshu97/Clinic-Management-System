@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClinicFlow - Receptionist Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/receptionist/dashboard/styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">📋</span>
+          <span class="brand-name">ClinicFlow</span>
+        </div>
+        <nav class="menu">
+          <a class="item active" href="/receptionist/dashboard/"><span class="icon">▦</span><span>Dashboard</span></a>
+          <a class="item" href="#" data-tab-link="registration"><span class="icon">📝</span><span>Patient Registration</span></a>
+          <a class="item" href="#" data-tab-link="token"><span class="icon">🎫</span><span>Token Queue</span></a>
+          <a class="item" href="#" data-tab-link="billing"><span class="icon">💳</span><span>Billing</span></a>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <h1>Receptionist Dashboard</h1>
+          <div class="profile" id="profileMenu">
+            <img class="avatar" id="avatarBtn" src="https://ui-avatars.com/api/?name=RC&background=2563eb&color=fff" alt="avatar" />
+            <div class="dropdown" id="profileDropdown">
+              <a href="#">My Account</a>
+              <a href="#">Support</a>
+              <a href="/index.html">Log out</a>
+            </div>
+          </div>
+        </header>
+
+        <section class="tabs">
+          <button class="tab-btn active" data-tab="token">Token Management</button>
+          <button class="tab-btn" data-tab="registration">Patient Registration</button>
+          <button class="tab-btn" data-tab="billing">Billing</button>
+        </section>
+
+        <!-- Token Management Panel -->
+        <section class="tab-panel" id="panel-token">
+          <div class="grid-2">
+            <!-- Patient Queue -->
+            <article class="panel">
+              <header class="panel-header">
+                <h2>Patient Queue</h2>
+                <p class="desc">Manage tokens waiting to be served.</p>
+              </header>
+              <div class="panel-body">
+                <div class="actions">
+                  <button class="btn primary" id="openQueueModal">Add Patient to Queue</button>
+                  <button class="btn" id="callNextBtn">Call Next</button>
+                </div>
+                <div class="queue-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Token</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>#A101</td>
+                        <td>John Carter</td>
+                        <td>Dr. Smith</td>
+                        <td><span class="badge secondary">Waiting</span></td>
+                        <td><a class="btn" href="#">Remove</a></td>
+                      </tr>
+                      <tr>
+                        <td>#A102</td>
+                        <td>Ana Gomez</td>
+                        <td>Dr. Lee</td>
+                        <td><span class="badge warning">Paused</span></td>
+                        <td><a class="btn" href="#">Resume</a></td>
+                      </tr>
+                      <tr>
+                        <td>#A103</td>
+                        <td>Michael Brown</td>
+                        <td>Dr. Patel</td>
+                        <td><span class="badge success">Serving</span></td>
+                        <td><a class="btn" href="#">Complete</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </article>
+
+            <!-- Now Serving -->
+            <article class="panel">
+              <header class="panel-header">
+                <h2>Now Serving</h2>
+                <p class="desc">Details of the current serving token.</p>
+              </header>
+              <div class="panel-body">
+                <div class="now-serving">
+                  <div class="token-large">A103</div>
+                  <div class="serve-meta">
+                    <div>Patient: <b>Michael Brown</b></div>
+                    <div>Doctor: <b>Dr. Patel</b></div>
+                    <div>Room: <b>102</b></div>
+                  </div>
+                  <div class="serve-actions">
+                    <button class="btn" id="pauseServingBtn">Pause</button>
+                    <button class="btn primary" id="completeServingBtn">Complete</button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Patient Registration Panel -->
+        <section class="tab-panel hidden" id="panel-registration">
+          <article class="panel">
+            <header class="panel-header">
+              <h2>Register New Patient</h2>
+              <p class="desc">Capture patient details to create a record.</p>
+            </header>
+            <form class="form">
+              <div class="form-section">
+                <h3 class="section-title">Personal Information</h3>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label for="pname">Full Name</label>
+                    <input id="pname" type="text" placeholder="Jane Doe" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="page">Age</label>
+                    <input id="page" type="number" placeholder="30" min="0" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="pgender">Gender</label>
+                    <select id="pgender" required>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="section-title">Contact Information</h3>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label for="pphone">Phone</label>
+                    <input id="pphone" type="tel" placeholder="555-0123" pattern="^[0-9\-\s]+$" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="paddress">Address</label>
+                    <input id="paddress" type="text" placeholder="123 Main St" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3 class="section-title">Other Details</h3>
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label for="pphoto">Photo</label>
+                    <input id="pphoto" type="file" accept="image/*" capture="environment" />
+                    <img id="photoPreview" class="photo-preview" alt="Photo preview" style="display:none;" />
+                  </div>
+                  <div class="form-group">
+                    <label for="pid">Patient ID</label>
+                    <input id="pid" type="text" placeholder="CLF-001" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn" type="reset">Reset</button>
+                <button class="btn primary" id="registerPatientBtn" type="button">Register</button>
+              </div>
+            </form>
+          </article>
+        </section>
+
+        <!-- Billing Panel -->
+        <section class="tab-panel hidden" id="panel-billing">
+          <article class="panel">
+            <header class="panel-header">
+              <h2>Billing</h2>
+              <p class="desc">View and manage pending bills.</p>
+            </header>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Bill ID</th>
+                    <th>Patient</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>B-001</td>
+                    <td>John Carter</td>
+                    <td>$80.00</td>
+                    <td><span class="badge warning">Pending</span></td>
+                    <td><a class="btn primary" id="collectBillBtn" href="#">Collect</a></td>
+                  </tr>
+                  <tr>
+                    <td>B-002</td>
+                    <td>Ana Gomez</td>
+                    <td>$120.00</td>
+                    <td><span class="badge secondary">Awaiting</span></td>
+                    <td><a class="btn" id="sendReminderBtn" href="#">Send Reminder</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- Add to Queue Modal -->
+        <div class="modal-overlay hidden" id="queueModal">
+          <div class="modal">
+            <header class="modal-header">
+              <h3>Add Patient to Queue</h3>
+              <button class="close" id="closeQueueModal">✕</button>
+            </header>
+            <div class="modal-body">
+              <div class="searchbar">
+                <input class="search-input" type="text" placeholder="Search patients..." />
+              </div>
+              <div class="panel-body" style="padding-left:0;padding-right:0;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Last Visit</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="modalPatientsTbody">
+                    <tr class="empty-row"><td colspan="3">No patients found. Register a patient first.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+    <script src="/receptionist/dashboard/script.js"></script>
+  </body>
+  </html>

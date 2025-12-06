@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Management System - Project Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        ul ul {
+            list-style-type: circle;
+            margin-left: 20px;
+        }
+        b {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clinic Management System - Project Report</h1>
+
+        <h2>1. Project Overview</h2>
+        <p>The Clinic Management System is a web-based application designed to manage the operations of a clinic, providing separate portals for doctors and receptionists. It aims to streamline patient management, scheduling, and other administrative tasks.</p>
+
+        <h2>2. Technology Stack</h2>
+        <ul>
+            <li><b>Frontend:</b> HTML, CSS, JavaScript</li>
+            <li><b>Backend/Authentication:</b> Google Firebase (Authentication, Firestore for data storage)</li>
+            <li><b>Backend (Local Development):</b> <code>json-server</code> (used in <code>backend/package.json</code>)</li>
+            <li><b>Server:</b> <code>serve</code> (used in root <code>package.json</code> for serving static files)</li>
+            <li><b>Cloud Functions:</b> Firebase Functions (Node.js 22, <code>firebase-admin</code>, <code>firebase-functions</code>)</li>
+        </ul>
+
+        <h2>3. Project Structure</h2>
+        <ul>
+            <li><b><code>assets/</code>:</b> Shared assets like <code>firebase-init.js</code> for Firebase configuration, and other static files (e.g., <code>clinic-hall.svg</code>). Also contains Firestore data scripts.</li>
+            <li><b><code>login/</code>:</b> Contains login and registration forms for different user roles (doctor, receptionist).
+                <ul>
+                    <li><code>login/doctor/</code>: Doctor login page.</li>
+                    <li><code>login/doctor_registration/</code>: Doctor registration page.</li>
+                    <li><code>login/receptionist/</code>: Receptionist login page.</li>
+                    <li><code>login/receptionist_registration/</code>: Receptionist registration page.</li>
+                </ul>
+            </li>
+            <li><b><code>doctor/</code>:</b> Doctor's portal functionalities (e.g., <code>billing</code>, <code>dashboard</code>, <code>history</code>, <code>patients</code>, <code>prescriptions</code>, <code>profile</code>, <code>queue</code>).</li>
+            <li><b><code>receptionist/</code>:</b> Receptionist's portal functionalities (e.g., <code>dashboard</code>).</li>
+            <li><b><code>backend/</code>:</b> Contains <code>json-server</code> setup and potentially other backend logic.</li>
+            <li><b><code>functions/</code>:</b> Firebase Cloud Functions.</li>
+            <li><b><code>dataconnect/</code>:</b> Data Connect related configurations and schema.</li>
+            <li><b><code>index.html</code>, <code>index.css</code>, <code>index.js</code>:</b> The main landing page of the application.</li>
+        </ul>
+
+        <h2>4. Key Features</h2>
+        <ul>
+            <li><b>User Authentication:</b> Separate login and registration for Doctors and Receptionists using Firebase Authentication.</li>
+            <li><b>Doctor Portal:</b> Access to patient records, prescription management, billing, dashboard, and queue management.</li>
+            <li><b>Receptionist Portal:</b> Patient queue management, registration, and billing.</li>
+            <li><b>Data Management:</b> Utilizes Firebase Firestore for data storage (though some parts are marked as "not fully implemented yet" in the README).</li>
+            <li><b>Static File Serving:</b> Frontend served via a simple Node.js `serve` package.</li>
+        </ul>
+
+        <h2>5. Firebase Integration Details</h2>
+        <p>Firebase is a core component of this system, primarily for authentication and data storage. The `assets/firebase-init.js` file initializes the Firebase application and exports the `app`, `auth`, and `db` (Firestore) objects for use throughout the application.</p>
+        <ul>
+            <li><b>Authentication:</b> `createUserWithEmailAndPassword` is used for user registration. `onAuthStateChanged` is used to monitor the user's authentication state.</li>
+            <li><b>Firestore:</b> Used for storing patient data, billing information, prescriptions, and token data. Examples of `addPatient` and `getAllPatients` functions are present, indicating basic CRUD operations with Firestore.</li>
+            <li><b>Firebase Functions:</b> The `functions/` directory suggests the use of Firebase Cloud Functions for server-side logic, though specific implementations were not detailed in the initial overview.</li>
+        </ul>
+
+        <h2>6. Workflow and Execution</h2>
+        <h3>6.1. Firebase Project Setup</h3>
+        <p>To run the project, a Firebase project needs to be set up, and the `firebaseConfig` object from the Firebase Console must be updated in `assets/firebase-init.js`.</p>
+        <h3>6.2. Running the Frontend Server</h3>
+        <p>The frontend is served using a Node.js server. After installing dependencies (`npm install`), the server can be started with `npm start`, typically running on `http://localhost:5000` (or another available port).</p>
+        <h3>6.3. Usage</h3>
+        <p>Users can navigate to `http://localhost:9003/homepage.html` to access the application. From there, they can log in or register for either the Doctor or Receptionist portals.</p>
+
+        <h2>7. Conclusion</h2>
+        <p>The Clinic Management System provides a foundational web application for managing clinic operations with distinct user roles. Leveraging Firebase for authentication and data storage, it offers a scalable and robust backend solution. The modular structure allows for clear separation of concerns between different user portals and backend functionalities.</p>
+    </div>
+</body>
+</html>

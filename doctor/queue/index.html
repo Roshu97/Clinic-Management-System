@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClinicFlow - Queue</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../dashboard/styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">🩺</span>
+          <span class="brand-name">ClinicFlow</span>
+        </div>
+        <nav class="menu">
+          <a class="item" href="/doctor/dashboard/"><span class="icon">▦</span><span>Dashboard</span></a>
+          <a class="item" href="/doctor/patients/"><span class="icon">👥</span><span>Patients</span></a>
+          <a class="item active" href="/doctor/queue/"><span class="icon">🎫</span><span>Queue</span></a>
+          <a class="item" href="/doctor/prescriptions/"><span class="icon">💊</span><span>Prescriptions</span></a>
+          <a class="item" href="/doctor/profile/"><span class="icon">👤</span><span>Profile</span></a>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <h1>Doctor Dashboard</h1>
+          <div class="profile" id="profileMenu">
+            <img class="avatar" id="avatarBtn" src="https://ui-avatars.com/api/?name=Dr&background=2563eb&color=fff" alt="avatar" />
+            <div class="dropdown" id="profileDropdown">
+              <a href="#">My Account</a>
+              <a href="/doctor/profile/">Profile</a>
+              <a href="#">Support</a>
+              <a href="/index.html">Log out</a>
+            </div>
+          </div>
+        </header>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Queue</h2>
+            <button class="btn primary" id="addNewTokenBtn">Add New Token</button>
+            <div class="desc">Manage patients in the queue and update their status.</div>
+          </div>
+          <div class="panel-body">
+            <div style="margin-bottom: 12px; display:flex; gap:8px; align-items:center;">
+              <span class="muted">Statuses:</span>
+              <span class="badge secondary">Waiting</span>
+              <span class="badge success">Serving</span>
+              <span class="badge warning">Paused</span>
+              <span class="badge">Completed</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Token</th>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="queueTbody">
+                <tr class="empty-row"><td colspan="5">No queue entries.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Add New Token Modal -->
+    <div id="addTokenModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Generate New Token</h2>
+        <form id="addTokenForm">
+          <div class="form-group">
+            <label for="patientId">Patient ID:</label>
+            <input type="text" id="patientId" required />
+          </div>
+          <div class="form-group">
+            <label for="doctorName">Doctor Name:</label>
+            <input type="text" id="doctorName" required />
+          </div>
+          <button type="submit" class="btn primary">Generate Token</button>
+        </form>
+      </div>
+    </div>
+    <script src="../dashboard/script.js"></script>
+    <script src="script.js" type="module"></script>
+  </body>
+  </html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClinicFlow - Doctor Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <span class="brand-icon">🩺</span>
+          <span class="brand-name">ClinicFlow</span>
+        </div>
+        <nav class="menu">
+          <a class="item active" href="/doctor/dashboard/"><span class="icon"><i class="fas fa-th-large"></i></span><span>Dashboard</span></a>
+          <a class="item" href="/doctor/patients/"><span class="icon"><i class="fas fa-users"></i></span><span>Patients</span></a>
+          <a class="item" href="/doctor/queue/"><span class="icon"><i class="fas fa-ticket-alt"></i></span><span>Queue</span></a>
+          <a class="item" href="/doctor/prescriptions/"><span class="icon"><i class="fas fa-pills"></i></span><span>Prescriptions</span></a>
+          <a class="item" href="/doctor/billing/"><span class="icon"><i class="fas fa-credit-card"></i></span><span>Billing</span></a>
+          <a class="item" href="/doctor/history/"><span class="icon"><i class="fas fa-history"></i></span><span>Patient History</span></a>
+          <a class="item" href="/doctor/profile/"><span class="icon"><i class="fas fa-user-circle"></i></span><span>Profile</span></a>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1>Doctor Dashboard</h1>
+          <div class="profile" id="profileMenu">
+            <img class="avatar" id="avatarBtn" src="https://ui-avatars.com/api/?name=Dr&background=2563eb&color=fff" alt="avatar" />
+            <div class="dropdown" id="profileDropdown">
+              <a href="#">My Account</a>
+              <a href="/doctor/profile/">Profile</a>
+              <a href="#">Support</a>
+              <a href="/index.html">Log out</a>
+            </div>
+          </div>
+        </header>
+
+        <section class="cards">
+          <article class="card">
+            <div class="card-title">Today's Patients</div>
+            <div class="card-value" id="todayPatientsCount">0</div>
+            <div class="card-detail">Patients registered today.</div>
+          </article>
+          <article class="card">
+            <div class="card-title">Pending Prescriptions</div>
+            <div class="card-value">0</div>
+            <div class="card-detail">To be reviewed.</div>
+          </article>
+          <article class="card">
+            <div class="card-title">Avg. Consultation Time</div>
+            <div class="card-value">12m 30s</div>
+            <div class="card-detail">Metric not available</div>
+          </article>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
