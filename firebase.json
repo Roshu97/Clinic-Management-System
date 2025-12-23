@@ -1,0 +1,32 @@
+{
+  "functions": {
+    "source": "functions"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5002
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": true
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/login/doctor_registration/**",
+        "destination": "/login/doctor_registration/index.html"
+      },
+      {
+        "source": "/login/receptionist_registration/**",
+        "destination": "/login/receptionist_registration/index.html"
+      }
+    ]
+  }
+}

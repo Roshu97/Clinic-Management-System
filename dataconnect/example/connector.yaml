@@ -1,0 +1,23 @@
+connectorId: example
+generate:
+  javascriptSdk:
+    - outputDir: ..\..\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..
+      react: false
+      angular: false
+    - outputDir: ..\..\backend\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\backend
+      react: false
+      angular: false
+    - outputDir: ..\..\backend\functions\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\backend\functions
+      react: false
+      angular: false
+    - outputDir: ..\..\backend\clinic-flow\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\backend\clinic-flow
+      react: false
+      angular: false

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClinicFlow - Billing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../dashboard/styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">🩺</span>
+          <span class="brand-name">ClinicFlow</span>
+        </div>
+        <nav class="menu">
+          <a class="item" href="/doctor/dashboard/"><span class="icon">▦</span><span>Dashboard</span></a>
+          <a class="item" href="/doctor/patients/"><span class="icon">👥</span><span>Patients</span></a>
+          <a class="item" href="/doctor/prescriptions/"><span class="icon">💊</span><span>Prescriptions</span></a>
+          <a class="item active" href="/doctor/billing/"><span class="icon">💳</span><span>Billing</span></a>
+          <a class="item" href="/doctor/profile/"><span class="icon">👤</span><span>Profile</span></a>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <h1>Doctor Dashboard</h1>
+          <div class="profile" id="profileMenu">
+            <img class="avatar" id="avatarBtn" src="https://ui-avatars.com/api/?name=Dr&background=2563eb&color=fff" alt="avatar" />
+            <div class="dropdown" id="profileDropdown">
+              <a href="#">My Account</a>
+              <a href="/doctor/profile/">Profile</a>
+              <a href="#">Support</a>
+              <a href="/index.html">Log out</a>
+            </div>
+          </div>
+        </header>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Billing</h2>
+            <div class="desc">Manage patient billing and invoices.</div>
+          </div>
+          <div class="panel-body">
+            <div class="searchbar">
+              <input class="search-input" type="text" placeholder="Search by patient or invoice ID..." />
+              <button class="btn primary" id="addBillBtn">Add New Bill</button>
+            </div>
+            <div style="margin-top:14px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Invoice ID</th>
+                    <th>Patient</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="billingTable">
+                  <tr>
+                    <td>INV-001</td>
+                    <td>John Doe</td>
+                    <td>$150.00</td>
+                    <td><span class="badge warning">Pending</span></td>
+                    <td>2024-12-31</td>
+                    <td><a class="btn primary" href="#">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="./script.js" type="module"></script>
+    <script src="../dashboard/script.js"></script>
+  </body>
+  <div id="addBillModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Add New Bill</h2>
+      <form id="addBillForm">
+        <div class="form-group">
+          <label for="patientNameBill">Patient Name:</label>
+          <input type="text" id="patientNameBill" required>
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount:</label>
+          <input type="number" id="amount" required>
+        </div>
+        <div class="form-group">
+          <label for="status">Status:</label>
+          <select id="status" required>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dueDate">Due Date:</label>
+          <input type="date" id="dueDate" required>
+        </div>
+        <div class="form-group">
+          <label for="services">Services Rendered:</label>
+          <textarea id="services"></textarea>
+        </div>
+        <button type="submit" class="btn primary">Add Bill</button>
+      </form>
+    </div>
+  </div>
+  </html>
