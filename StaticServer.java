@@ -60,7 +60,7 @@ public class StaticServer {
 
             String rawPath = exchange.getRequestURI().getPath();
             String path = (rawPath == null || "/".equals(rawPath) || "/index.html".equals(rawPath))
-                    ? "/homepage.html" : rawPath;
+                    ? "/index.html" : rawPath;
 
             Path file = root.resolve(path.substring(1)).normalize();
 

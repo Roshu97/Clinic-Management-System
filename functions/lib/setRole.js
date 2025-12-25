@@ -39,7 +39,7 @@ const firebase_functions_1 = require("firebase-functions");
 const https_1 = require("firebase-functions/v2/https");
 admin.initializeApp();
 exports.setCustomUserRole = (0, https_1.onCall)({
-    cors: true
+    cors: "*"
 }, async (request) => {
     // Check if the request is made by an authenticated user
     if (!request.auth) {

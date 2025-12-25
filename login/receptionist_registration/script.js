@@ -24,7 +24,9 @@ document.getElementById('receptionistRegistrationForm').addEventListener('submit
         user = userCredential.user;
 
         const functions = getFunctions(app);
-        connectFunctionsEmulator(functions, "127.0.0.1", 5002);
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            connectFunctionsEmulator(functions, "127.0.0.1", 5002);
+        }
 
         const setRole = httpsCallable(functions, "setCustomUserRole");
         await setRole({ email: email, role: "receptionist" });

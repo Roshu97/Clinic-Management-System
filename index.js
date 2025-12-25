@@ -1,6 +1,6 @@
 import { db, doc, getDoc, auth } from './assets/firebase-init.js';
 import { addPatient, getAllPatients } from './assets/firestore-patient-data.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 // Simple interactions for the ClinicFlow homepage
 document.addEventListener('DOMContentLoaded', () => {
   const doctorBtn = document.getElementById('doctor-login');
@@ -66,5 +66,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  console.log("homepage.js is executing.");
+  console.log("index.js is executing.");
 });

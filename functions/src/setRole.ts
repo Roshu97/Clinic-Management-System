@@ -10,7 +10,7 @@ interface SetRoleData {
 admin.initializeApp();
 
 export const setCustomUserRole = onCall({
-  cors: true
+  cors: "*"
 }, async (request: CallableRequest<SetRoleData>) => {
   // Check if the request is made by an authenticated user
   if (!request.auth) {
