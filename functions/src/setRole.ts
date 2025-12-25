@@ -1,59 +1,55 @@
 import * as admin from 'firebase-admin';
 import { logger } from 'firebase-functions';
-import { onCall, HttpsError, CallableRequest } from 'firebase-functions/v2/https';
+import { onRequest } from 'firebase-functions/v2/https';
+import cors from 'cors';
 
-interface SetRoleData {
-  email: string;
-  role: string;
+const corsHandler = cors({ origin: true });
+
+if (admin.apps.length === 0) {
+  admin.initializeApp();
 }
 
-admin.initializeApp();
-
-export const setCustomUserRole = onCall({
-  cors: "*"
-}, async (request: CallableRequest<SetRoleData>) => {
-  // Check if the request is made by an authenticated user
-  if (!request.auth) {
-    throw new HttpsError(
-      'unauthenticated',
-      'Only authenticated users can set custom claims.'
-    );
-  }
-
-  const { email, role } = request.data;
-
-  if (!email || !role) {
-    throw new HttpsError(
-      'invalid-argument',
-      'The function must be called with an email and a role.'
-    );
-  }
-
-  const allowedRoles = ['doctor', 'receptionist'];
-
-  if (!allowedRoles.includes(role)) {
-    throw new HttpsError(
-      'invalid-argument',
-      'The role must be either doctor or receptionist.'
-    );
-  }
-
-  try {
-    logger.info(`Setting role ${role} for user ${email}`);
-    const user = await admin.auth().getUserByEmail(email);
-    await admin.auth().setCustomUserClaims(user.uid, { role: role });
-    return { message: `Success! ${email} now has the role ${role}.` };
-  } catch (error: any) {
-    logger.error('Failed to set custom user role', error);
-    
-    // Check if it's a known auth error
-    if (error.code === 'auth/user-not-found') {
-      throw new HttpsError('not-found', `User with email ${email} not found.`);
+export const setCustomUserRole = onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    // Handle preflight request 
+    if (req.method === "OPTIONS") {
+      res.set("Access-Control-Allow-Origin", "*");
+      res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      res.status(204).send("");
+      return;
     }
-    
-    throw new HttpsError(
-      'internal',
-      error.message || 'Failed to set custom user role.'
-    );
-  }
+
+    try {
+      const { email, uid, role } = req.body;
+
+      // Support both email (current frontend) and uid (user's snippet)
+      let targetUid = uid;
+      if (!targetUid && email) {
+        const user = await admin.auth().getUserByEmail(email);
+        targetUid = user.uid;
+      }
+
+      if (!targetUid || !role) {
+        res.status(400).json({ error: "Missing uid/email or role" });
+        return;
+      }
+
+      const allowedRoles = ['doctor', 'receptionist'];
+      if (!allowedRoles.includes(role)) {
+        res.status(400).json({ error: "Invalid role" });
+        return;
+      }
+
+      logger.info(`Setting role ${role} for user ${targetUid}`);
+      await admin.auth().setCustomUserClaims(targetUid, { role });
+
+      res.set("Access-Control-Allow-Origin", "*");
+      res.status(200).json({ success: true, message: `Role ${role} assigned successfully` });
+    } catch (error: any) {
+      logger.error('Failed to set custom user role', error);
+      res.set("Access-Control-Allow-Origin", "*");
+      res.status(500).json({ error: error.message || "internal" });
+    }
+  });
 });

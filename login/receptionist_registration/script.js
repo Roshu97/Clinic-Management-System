@@ -1,6 +1,5 @@
 import { app, auth } from '../../assets/firebase-init.js';
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-functions.js";
 import logger from '../../assets/logger.js';
 
 document.getElementById('receptionistRegistrationForm').addEventListener('submit', async function(event) {
@@ -23,13 +22,21 @@ document.getElementById('receptionistRegistrationForm').addEventListener('submit
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         user = userCredential.user;
 
-        const functions = getFunctions(app);
-        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-            connectFunctionsEmulator(functions, "127.0.0.1", 5002);
-        }
+        const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+        const functionUrl = isLocal 
+            ? "http://127.0.0.1:5002/clinic-management-system-12345/us-central1/setCustomUserRole"
+            : "https://us-central1-clinic-management-system-12345.cloudfunctions.net/setCustomUserRole";
 
-        const setRole = httpsCallable(functions, "setCustomUserRole");
-        await setRole({ email: email, role: "receptionist" });
+        const response = await fetch(functionUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, role: "receptionist" })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to assign role');
+        }
 
         const idTokenResult = await user.getIdTokenResult(true);
         const assignedRole = idTokenResult.claims.role;

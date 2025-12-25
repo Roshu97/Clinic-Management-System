@@ -28,8 +28,9 @@ const db = getFirestore(app);
 
 // Connect to emulators if running locally
 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
-  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  const host = location.hostname;
+  connectAuthEmulator(auth, `http://${host}:9099`);
+  connectFirestoreEmulator(db, host, 8080);
 }
 
 export { app, auth, db, collection, doc, getDoc };

@@ -1,74 +1,93 @@
 import * as admin from 'firebase-admin';
-import firebaseFunctionsTest from 'firebase-functions-test'; // Changed to default import
+
+// Mock cors before importing setRole
+jest.mock('cors', () => {
+  return jest.fn(() => (req: any, res: any, next: any) => next());
+});
+
+// Mock firebase-admin
+jest.mock('firebase-admin', () => {
+  const authMock = {
+    getUserByEmail: jest.fn(),
+    setCustomUserClaims: jest.fn(),
+  };
+  const auth = jest.fn(() => authMock);
+  return {
+    initializeApp: jest.fn(),
+    apps: [],
+    auth: auth,
+  };
+});
+
 import { setCustomUserRole } from './setRole';
 
-// Initialize firebase-functions-test
-const test = firebaseFunctionsTest();
-
-// Mock admin.initializeApp() - This line will be removed or modified
-// admin.initializeApp = jest.fn(); // This line caused TS2540
-
 describe('setCustomUserRole', () => {
-  let wrapped: any;
+  let req: any;
+  let res: any;
+  let authMock: any;
 
-  beforeAll(() => {
-    // Mock admin.initializeApp before wrapping the function
-    jest.spyOn(admin, 'initializeApp').mockReturnValue(undefined);
-    // Wrap the function
-    wrapped = test.wrap(setCustomUserRole);
+  beforeEach(() => {
+    req = {
+      method: 'POST',
+      body: {},
+      headers: {},
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      set: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+    };
+    
+    authMock = (admin.auth() as any);
+    authMock.getUserByEmail.mockReset();
+    authMock.setCustomUserClaims.mockReset();
+    
+    // Default success mock for getUserByEmail
+    authMock.getUserByEmail.mockResolvedValue({ uid: 'test-uid' });
+    authMock.setCustomUserClaims.mockResolvedValue(undefined);
   });
 
-  afterAll(() => {
-    test.cleanup();
-    jest.restoreAllMocks(); // Restore mocks after all tests
+  it('should return 400 if email/uid or role are missing', async () => {
+    req.body = { email: 'test@example.com' }; // Missing role
+    
+    await setCustomUserRole(req as any, res as any);
+    
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: "Missing uid/email or role" }));
   });
 
-  it('should throw unauthenticated error if called by unauthenticated user', async () => {
-    const data = { email: 'test@example.com', role: 'doctor' };
-    const context = {}; // Unauthenticated context
-
-    await expect(wrapped(data, context)).rejects.toThrow('Only authenticated users can set custom claims.');
+  it('should return 400 for invalid role', async () => {
+    req.body = { email: 'test@example.com', role: 'admin' };
+    
+    await setCustomUserRole(req as any, res as any);
+    
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: "Invalid role" }));
   });
 
-  it('should throw invalid-argument error if email or role are missing', async () => {
-    const context = { auth: { uid: 'some-uid', token: {} } };
-
-    // Missing email
-    const dataWithoutEmail = { role: 'doctor' };
-    await expect(wrapped(dataWithoutEmail, context)).rejects.toThrow('The function must be called with an email and a role.');
-
-    // Missing role
-    const dataWithoutRole = { email: 'test@example.com' };
-    await expect(wrapped(dataWithoutRole, context)).rejects.toThrow('The function must be called with an email and a role.');
-  });
-
-  it('should reject unsupported role values', async () => {
-    const email = 'test@example.com';
-    const data = { email, role: 'admin' };
-    const context = { auth: { uid: 'some-uid', token: {} } };
-
-    await expect(wrapped(data, context)).rejects.toThrow('The role must be either doctor or receptionist.');
-  });
-
-  it('should successfully set custom user role for an authenticated user', async () => {
+  it('should successfully set custom user role using email', async () => {
     const email = 'test@example.com';
     const role = 'doctor';
-    const data = { email, role };
-    const context = { auth: { uid: 'some-uid', token: {} } };
+    req.body = { email, role };
 
-    // Mock admin.auth().getUserByEmail and admin.auth().setCustomUserClaims
-    const getUserByEmailMock = jest.fn(() => Promise.resolve({ uid: 'test-uid' }));
-    const setCustomUserClaimsMock = jest.fn(() => Promise.resolve());
+    await setCustomUserRole(req as any, res as any);
 
-    jest.spyOn(admin, 'auth').mockReturnValue({
-      getUserByEmail: getUserByEmailMock,
-      setCustomUserClaims: setCustomUserClaimsMock,
-    } as any);
+    expect(authMock.getUserByEmail).toHaveBeenCalledWith(email);
+    expect(authMock.setCustomUserClaims).toHaveBeenCalledWith('test-uid', { role });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+  });
 
-    const result = await wrapped(data, context);
+  it('should successfully set custom user role using uid', async () => {
+    const uid = 'test-uid-direct';
+    const role = 'receptionist';
+    req.body = { uid, role };
 
-    expect(getUserByEmailMock).toHaveBeenCalledWith(email);
-    expect(setCustomUserClaimsMock).toHaveBeenCalledWith('test-uid', { role });
-    expect(result).toEqual({ message: `Success! ${email} now has the role ${role}.` });
+    await setCustomUserRole(req as any, res as any);
+
+    expect(authMock.setCustomUserClaims).toHaveBeenCalledWith(uid, { role });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
   });
 });
