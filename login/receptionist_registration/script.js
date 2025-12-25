@@ -23,9 +23,14 @@ document.getElementById('receptionistRegistrationForm').addEventListener('submit
         user = userCredential.user;
 
         const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+        const projectId = "clinic-management-system-12345";
+        const region = "us-central1"; // Change to "asia-southeast1" if you deployed there
+
         const functionUrl = isLocal 
-            ? "http://127.0.0.1:5002/clinic-management-system-12345/us-central1/setCustomUserRole"
-            : "https://us-central1-clinic-management-system-12345.cloudfunctions.net/setCustomUserRole";
+            ? `http://127.0.0.1:5002/${projectId}/${region}/setCustomUserRole`
+            : `https://${region}-${projectId}.cloudfunctions.net/setCustomUserRole`;
+
+        console.log(`Calling function at: ${functionUrl}`);
 
         const response = await fetch(functionUrl, {
             method: 'POST',
