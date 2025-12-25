@@ -32,56 +32,39 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCustomUserRole = void 0;
 const admin = __importStar(require("firebase-admin"));
 const firebase_functions_1 = require("firebase-functions");
 const https_1 = require("firebase-functions/v2/https");
-const cors_1 = __importDefault(require("cors"));
-const corsHandler = (0, cors_1.default)({ origin: true });
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
-exports.setCustomUserRole = (0, https_1.onRequest)((req, res) => {
-    corsHandler(req, res, async () => {
-        // Handle preflight request 
-        if (req.method === "OPTIONS") {
-            res.set("Access-Control-Allow-Origin", "*");
-            res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-            res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            res.status(204).send("");
+exports.setCustomUserRole = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
+    try {
+        const { email, uid, role } = req.body;
+        // Support both email (current frontend) and uid (user's snippet)
+        let targetUid = uid;
+        if (!targetUid && email) {
+            const user = await admin.auth().getUserByEmail(email);
+            targetUid = user.uid;
+        }
+        if (!targetUid || !role) {
+            res.status(400).json({ error: "Missing uid/email or role" });
             return;
         }
-        try {
-            const { email, uid, role } = req.body;
-            // Support both email (current frontend) and uid (user's snippet)
-            let targetUid = uid;
-            if (!targetUid && email) {
-                const user = await admin.auth().getUserByEmail(email);
-                targetUid = user.uid;
-            }
-            if (!targetUid || !role) {
-                res.status(400).json({ error: "Missing uid/email or role" });
-                return;
-            }
-            const allowedRoles = ['doctor', 'receptionist'];
-            if (!allowedRoles.includes(role)) {
-                res.status(400).json({ error: "Invalid role" });
-                return;
-            }
-            firebase_functions_1.logger.info(`Setting role ${role} for user ${targetUid}`);
-            await admin.auth().setCustomUserClaims(targetUid, { role });
-            res.set("Access-Control-Allow-Origin", "*");
-            res.status(200).json({ success: true, message: `Role ${role} assigned successfully` });
+        const allowedRoles = ['doctor', 'receptionist'];
+        if (!allowedRoles.includes(role)) {
+            res.status(400).json({ error: "Invalid role" });
+            return;
         }
-        catch (error) {
-            firebase_functions_1.logger.error('Failed to set custom user role', error);
-            res.set("Access-Control-Allow-Origin", "*");
-            res.status(500).json({ error: error.message || "internal" });
-        }
-    });
+        firebase_functions_1.logger.info(`Setting role ${role} for user ${targetUid}`);
+        await admin.auth().setCustomUserClaims(targetUid, { role });
+        res.status(200).json({ success: true, message: `Role ${role} assigned successfully` });
+    }
+    catch (error) {
+        firebase_functions_1.logger.error('Failed to set custom user role', error);
+        res.status(500).json({ error: error.message || "internal" });
+    }
 });
 //# sourceMappingURL=setRole.js.map

@@ -1,10 +1,5 @@
 import * as admin from 'firebase-admin';
 
-// Mock cors before importing setRole
-jest.mock('cors', () => {
-  return jest.fn(() => (req: any, res: any, next: any) => next());
-});
-
 // Mock firebase-admin
 jest.mock('firebase-admin', () => {
   const authMock = {
@@ -37,6 +32,9 @@ describe('setCustomUserRole', () => {
       json: jest.fn().mockReturnThis(),
       set: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
+      on: jest.fn().mockReturnThis(),
+      getHeader: jest.fn(),
+      setHeader: jest.fn(),
     };
     
     authMock = (admin.auth() as any);
