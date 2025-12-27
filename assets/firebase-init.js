@@ -12,10 +12,10 @@ import { getAuth, connectAuthEmulator } from "https://www.gstatic.com/firebasejs
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA4lDCtDRX02X9tdc9DXKD-x0K4O7CCEdk",
-  authDomain: "clinic-management-system-12345.firebaseapp.com",
-  databaseURL: "https://clinic-management-system-12345-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "clinic-management-system-12345",
-  storageBucket: "clinic-management-system-12345.appspot.com",
+  authDomain: "clinic-management-system-1-alde.firebaseapp.com",
+  databaseURL: "https://clinic-management-system-1-alde-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "clinic-management-system-1-alde",
+  storageBucket: "clinic-management-system-1-alde.appspot.com",
   messagingSenderId: "406549152160",
   appId: "1:406549152160:web:cb266cc28e117e455424c5"
 };

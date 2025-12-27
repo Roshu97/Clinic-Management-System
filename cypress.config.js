@@ -20,7 +20,7 @@ module.exports = defineConfig({
       configureVisualRegression(on);
 
       return cypressFirebasePlugin(on, config, admin, {
-        projectId: 'clinic-management-system-12345',
+        projectId: 'clinic-management-system-1-alde',
       });
     },
   },
