@@ -36,7 +36,7 @@ document.getElementById('doctorRegistrationForm').addEventListener('submit', asy
         const response = await fetch(functionUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, role: "doctor" })
+            body: JSON.stringify({ uid: user.uid, role: "doctor" })
         });
 
         if (!response.ok) {
