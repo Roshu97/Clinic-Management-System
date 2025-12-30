@@ -4,18 +4,20 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const apiRoutes = require('./routes/apiRoutes'); 
-const User = require('./models/User');
+const User = require('./models/User'); // Only one declaration here
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // --- DATABASE CONNECTION ---
-// Use the Environment Variable for Render, fallback to local for development
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/clinic_cms';
 
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
+    .then(() => {
+        console.log('✅ MongoDB Connected');
+        createAdmin(); // Seed admin after successful connection
+    })
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // --- API ROUTES ---
@@ -34,7 +36,6 @@ app.post('/api/login', async (req, res) => {
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (err) {
-        // Log the actual error to Render logs so you can see it
         console.error("Login Error:", err);
         res.status(500).json({ error: 'Server error during login' });
     }
@@ -44,42 +45,34 @@ app.post('/api/login', async (req, res) => {
 const frontendPath = path.resolve(__dirname, '..', 'direction-frontend');
 console.log("✅ Serving frontend from:", frontendPath);
 
-// 1. Serve static files FIRST (this handles style.css, script.js, etc.)
 app.use(express.static(frontendPath));
 
-// 2. Explicitly handle the ROOT route (https://your-site.onrender.com/)
 app.get('/', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
 
-// 3. Handle all other routes (for page refreshes / deep linking)
-// The {*splat} syntax in Express 5 is the most reliable for catch-alls
+// Express 5 compatible named wildcard
 app.get('/*splat', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
 
-// Add this to the bottom of server.js
-const User = require('./models/User');
-
+// --- SEED FUNCTION ---
 async function createAdmin() {
     try {
-        // Delete any existing 'boss' to be sure we have a fresh start
+        // This ensures the 'boss' user exists with the correct credentials
         await User.deleteOne({ username: 'boss' });
-        
         const admin = new User({
             username: 'boss',
             password: '123',
             role: 'admin',
             name: 'System Admin'
         });
-        
         await admin.save();
         console.log("✅ Admin 'boss' created with password '123'");
     } catch (err) {
-        console.error("Seed error:", err);
+        console.error("❌ Seed error:", err);
     }
 }
-createAdmin();
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
