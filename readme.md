@@ -1,159 +1,103 @@
 🏥 Direction CMS - Clinic Management System
-A full-stack, role-based Clinic Management System designed to streamline patient registration, medical consultations, billing, and pharmacy inventory management.
+A full-stack, role-based Clinic Management System designed to streamline patient registration, medical consultations, billing, and pharmacy inventory management. Optimized for cloud deployment on Render.
 
 🌟 Features
-🔐 Multi-User Authentication
-Admin: Manage staff accounts (CRUD), view daily financial reports, and analyze revenue trends via interactive charts.
+🔐 Multi-User Authentication: Role-based access for Admin, Doctor, Receptionist, and Pharmacist.
 
-Receptionist: Register new patients, manage the waiting queue, and process bill payments.
+📈 Real-time Analytics: Revenue trends and daily reports using Chart.js.
 
-Doctor: View waiting list, search patient medical history, and issue digital prescriptions with real-time stock verification.
+💉 Smart Pharmacy: Real-time stock verification during prescription and automatic inventory deduction.
 
-Pharmacist: Manage medicine inventory, track low-stock alerts, and dispense prescribed medications.
+📋 Automated Workflow: Seamless transition from Registration → Consultation → Billing → Dispensing.
 
-📈 Core Functionalities
-Automated Workflow: Real-time status updates from Waiting → Treated → Paid → Completed.
-
-Inventory Automation: Automatic deduction of medicine stock upon dispensing and quick restock options.
-
-Financial Analytics: Daily revenue tracking and exportable CSV reports for accounting.
-
-Data Visualization: 7-day revenue trend charts using Chart.js.
-
-Responsive Design: Fully optimized for Desktop, Tablet, and Mobile views.
+📱 Responsive Design: Modern UI built with Flexbox/Grid for all device sizes.
 
 🛠️ Tech Stack
-Frontend: HTML5, CSS3 (Custom Flexbox/Grid), JavaScript (ES6+).
+Frontend: HTML5, CSS3, JavaScript (ES6+).
 
-Backend: Node.js, Express.js.
+Backend: Node.js, Express.js (v5.0+ compatible).
 
-Database: MongoDB (via Mongoose).
+Database: MongoDB Atlas (Cloud).
 
-Libraries: Chart.js (Analytics), FontAwesome (Icons), Dotenv (Environment Variables).
+Deployment: Render.com.
 
-🚀 Getting Started
-Prerequisites
-Node.js (v14 or higher)
+🚀 Live Deployment (Render)
+1. Environment Variables
+To run this project on Render, you must configure the following in the Environment tab: | Key | Value | | :--- | :--- | | PORT | 10000 (Render default) | | MONGO_URI | mongodb+srv://<user>:<pass>@cluster.mongodb.net/clinic_cms |
 
-MongoDB (Local server or MongoDB Atlas)
+2. Deployment Settings
+Root Directory: direction-cms
 
-Installation
-1. Clone the repository
-```bash
-git clone https://github.com/your-username/clinic-management-system.git
-cd clinic-management-system/direction-cms
-```
+Build Command: npm install
 
-2. Install dependencies
-```bash
-npm install
-```
-
-3. Configure Environment Variables
-Create a .env file in the direction-cms folder:
-```env
-PORT=3000
-MONGO_URI=mongodb://127.0.0.1:27017/clinic_cms
-```
-
-4. Seed the Initial Admin
-Run the server once to trigger the initial admin creation (default username: boss, password: 123).
-
-5. Start the server
-```bash
-node server.js
-```
-
-Access the App
-Open your browser and visit: http://localhost:3000
+Start Command: node server.js
 
 📂 Project Structure
+Plaintext
+
 Clinic_Management_System/
-├── direction-cms/                # Backend (Node.js/Express)
-│   ├── models/                   # Mongoose Schemas (Patient, User, Medicine)
-│   ├── routes/                   # API Endpoints
-│   ├── utils/                    # Utility functions (Logger)
-│   └── server.js                 # Server Entry Point
-├── direction-frontend/           # Frontend (HTML/JS/CSS)
-│   ├── admin/                    # Admin Dashboard & Logic
-│   ├── doctor/                   # Doctor Dashboard & Logic
-│   ├── pharmacy/                 # Pharmacy & Inventory Logic
-│   ├── receptionist/             # Registration & Billing Logic
+├── direction-cms/                # Backend (Root Directory for Render)
+│   ├── models/                   # Mongoose Schemas (User, Patient, Medicine)
+│   ├── routes/                   # API Endpoints (Admin, Doctor, etc.)
+│   ├── server.js                 # Entry point (Express 5 logic & Static Serving)
+│   └── .env                      # Local Environment Variables
+├── direction-frontend/           # Frontend (Served as Static Folder)
+│   ├── admin.html                # Admin Dashboard
+│   ├── doctor.html               # Doctor Dashboard
 │   ├── login.html                # Entry Point
-│   └── style.css                 # Global Responsive Styles
-└── readme.md
+│   └── style.css                 # Global Styles
+└── README.md
+🔧 Critical Implementation Notes (Express 5 Updates)
+Named Wildcards
+Because this project uses Express 5, all wildcard routes must be named.
 
-🛡️ Security & Permissions
-Route Protection: Frontend checks localStorage for user roles before granting access to specific dashboards.
+JavaScript
 
-Data Integrity: MongoDB Schema validation ensures required fields are met before saving.
+// Correct Express 5 Syntax
+app.get('/*splat', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'login.html'));
+});
+Dynamic API URLs
+To ensure the frontend works both locally and on Render, all fetch calls use dynamic origins:
 
-📖 Direction CMS: Staff User Manual
-This manual provides a step-by-step guide for each role in the clinic to ensure a smooth patient flow from registration to discharge.
+JavaScript
 
-1. Receptionist: Entry & Exit
-The receptionist manages the "front door" of the clinic.
+const API_URL = window.location.origin + '/api';
+🛡️ Security & Initial Setup
+Seeding the Admin
+On the first deployment, the server.js includes an automatic seeding function.
 
-Registering a New Patient
-Log in and go to the Receptionist Dashboard.
-Fill in the Patient Form (Name, Age, Contact, and History).
-Click Add Patient.
-Issue Token: A token number will appear on the screen.
+Default Username: boss
 
-Processing Billing
-Go to the Pending Bills section.
-Once a patient is finished with the Doctor, their name will appear here.
-Click Generate Bill ($50).
-After payment is received, click Print Receipt to give a physical copy to the patient.
+Default Password: 123
 
-2. Doctor: Consultation
-The Doctor focuses on medical data and prescriptions.
+Action: Log in immediately and create unique staff accounts via the Admin Dashboard.
 
-Seeing a Patient
-Log in to the Doctor Dashboard.
-View the Waiting Queue to see who is next.
-Click Consult on the patient's name.
+Database Security
+IP Whitelisting: Ensure MongoDB Atlas Network Access is set to 0.0.0.0/0 to allow Render's dynamic IPs.
 
-Medical History Search
-Use the Search bar to look up a patient's name and see their previous visit dates, prescribed medicines, and notes.
+Role Protection: Dashboards check localStorage for valid roles before rendering content.
 
-Stock Check
-Use the "Check Stock" search bar to ensure the medicine you want to prescribe is currently available in the pharmacy.
+📖 Staff User Manual
+1. Receptionist
+Entry: Register patients to generate a unique Token ID.
 
-Prescribe
-Enter the medicines and clinical notes.
-Click Submit Prescription. The patient is now automatically moved to the billing queue.
+Exit: Process payments in the "Pending Bills" section once the doctor completes the consultation.
 
-3. Pharmacist: Inventory & Dispensing
-The Pharmacist ensures the patient gets the right medicine and keeps the shelves full.
+2. Doctor
+Consult: View the live queue and access patient medical history.
 
-Dispensing Medication
-Patients who have paid their bill will appear in the Pending Prescriptions list.
-Read the prescribed medication on the screen.
-Once the medicine is handed to the patient, click Mark as Dispensed.
-Inventory Sync: The system will automatically subtract the units from your digital inventory.
+Prescribe: Use "Stock Check" before submitting digital prescriptions.
 
-Managing Stock
-Monitor the Medicine Inventory table.
-Items in RED are low on stock (less than 5 units).
-Click +10 Units for a quick restock, or use Add New Medicine for new shipments.
+3. Pharmacist
+Dispense: View "Paid Prescriptions" and mark as dispensed.
 
-4. Admin: Oversight & Management
-The Admin manages the "business" side of the clinic.
+Inventory: Items in RED are low stock (< 5 units). Click "+10 Units" to restock instantly.
 
-Adding/Removing Staff
-Go to Staff Management.
-Click + Add New Staff to create accounts for new Doctors or Receptionists.
-Use the Delete button to revoke access for former employees.
+4. Admin
+Management: CRUD operations on staff accounts.
 
-Financial Reports
-View the Revenue Trend chart to see the clinic's performance over the last week.
-Click Export to Excel (CSV) at the end of the day to save a record for accounting.
-
-🛠️ Troubleshooting
-Login Failed: Check your caps lock and ensure the Admin has created your account in the Staff Management section.
-Patient Missing: Ensure the Receptionist clicked "Add Patient" and the Doctor clicked "Submit Prescription."
-Server Error: Ensure the Node.js terminal is running and "MongoDB Connected" is visible.
+Finance: Export daily revenue to CSV for accounting.
 
 📝 License
-Distributed under the MIT License. See LICENSE for more information.
+Distributed under the MIT License.
