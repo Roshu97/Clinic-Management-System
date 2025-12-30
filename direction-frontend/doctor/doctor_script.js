@@ -1,4 +1,4 @@
-const API_URL = window.location.origin + '/api/admin';
+const API_URL = window.location.origin + '/api';
 
 // --- SECURITY CHECK ---
 const currentUser = JSON.parse(localStorage.getItem('user'));
