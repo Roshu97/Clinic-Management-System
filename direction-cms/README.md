@@ -1,30 +1,36 @@
-# Direction - Clinic Management System
+# Direction CMS - Backend
 
-## Project Description
-"Direction" is a work assistance software designed to streamline communication between doctors and receptionists. It handles patient registration, token generation, and prescription management efficiently.
+This is the backend for the Clinic Management System, built with Node.js, Express, and MongoDB.
 
 ## Features
-- **Receptionist Module:** Registers patients, assigns tokens automatically.
-- **Doctor Module:** Views live waiting queue, submits prescriptions.
-- **Automated Workflow:** Token status updates from "Waiting" to "Completed" upon consultation.
-- **Logging:** Tracks system actions for safety and debugging.
+- **API Endpoints:** Role-based access for Admins, Doctors, Pharmacists, and Receptionists.
+- **Database:** MongoDB (via Mongoose) for patient records, staff accounts, and inventory.
+- **Security:** Integrated authentication and role-based permissions.
+- **Reporting:** Daily financial reports and revenue stats for admin visualization.
 
-## Tech Stack
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript (Fetch API)
-- **Backend:** Node.js, Express.js
-- **Database:** MySQL
-- **Logging:** Winston Logger
+## Setup
 
-## Setup & Execution
+1. **Environment Variables**
+   Create a `.env` file in this directory:
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb://127.0.0.1:27017/clinic_cms
+   ```
 
-### 1. Database Setup
-- Install MySQL.
-- Run the script inside `schema.sql` to create the database and tables.
+2. **Installation**
+   ```bash
+   npm install
+   ```
 
-### 2. Backend Setup
-```bash
-git clone <your-repo-link>
-cd direction-cms
-npm install
-# Configure .env file with your DB credentials
-npm start
+3. **Run the Server**
+   ```bash
+   npm start
+   ```
+
+## Project Structure
+- `models/`: Mongoose schemas for Patient, User, and Medicine.
+- `routes/`: Express routes for all API endpoints.
+- `utils/`: Utility functions like the Winston logger.
+- `server.js`: The main entry point for the Express application.
+
+For full project documentation and a user manual, please refer to the [Root README](../readme.md).

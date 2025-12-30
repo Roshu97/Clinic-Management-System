@@ -53,6 +53,7 @@ app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PO
 
 const MONGO_URI = process.env.MONGO_URI; // We will set this in Render
 
+
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error(err));
