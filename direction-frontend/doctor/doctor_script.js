@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = window.location.origin + '/api/admin';
 
 // --- SECURITY CHECK ---
 const currentUser = JSON.parse(localStorage.getItem('user'));
@@ -34,7 +34,7 @@ async function fetchQueue() {
     tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Refreshing...</td></tr>';
 
     try {
-        const response = await fetch(`http://localhost:3000/api/doctor/queue`);
+        const response = await fetch(`${API_URL}/doctor/queue`);
         const patients = await response.json();
 
         renderTable(patients);
