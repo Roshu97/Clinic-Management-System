@@ -42,9 +42,20 @@ app.post('/api/login', async (req, res) => {
 
 // --- FRONTEND SERVING ---
 // This path is crucial for Render deployment
-const frontendPath = path.join(__dirname, '..', 'direction-frontend'); 
+// 1. Correct the path logic to go UP one level properly
+const frontendPath = path.resolve(__dirname, '..', 'direction-frontend');
+
+// 2. Add a simple log to verify the path in Render logs
+console.log("Serving frontend from:", frontendPath);
+
+// 3. Static files MUST be served BEFORE the catch-all route
 app.use(express.static(frontendPath));
 
+// 4. API Routes
+app.use('/api', apiRoutes);
+
+// 5. The catch-all route (Express 5 compatible)
+// Use /*splat instead of just *
 app.get('/*splat', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
