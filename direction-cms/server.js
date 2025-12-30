@@ -41,21 +41,19 @@ app.post('/api/login', async (req, res) => {
 });
 
 // --- FRONTEND SERVING ---
-// This path is crucial for Render deployment
-// 1. Correct the path logic to go UP one level properly
 const frontendPath = path.resolve(__dirname, '..', 'direction-frontend');
+console.log("✅ Serving frontend from:", frontendPath);
 
-// 2. Add a simple log to verify the path in Render logs
-console.log("Serving frontend from:", frontendPath);
-
-// 3. Static files MUST be served BEFORE the catch-all route
+// 1. Serve static files FIRST (this handles style.css, script.js, etc.)
 app.use(express.static(frontendPath));
 
-// 4. API Routes
-app.use('/api', apiRoutes);
+// 2. Explicitly handle the ROOT route (https://your-site.onrender.com/)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'login.html'));
+});
 
-// 5. The catch-all route (Express 5 compatible)
-// Use /*splat instead of just *
+// 3. Handle all other routes (for page refreshes / deep linking)
+// The {*splat} syntax in Express 5 is the most reliable for catch-alls
 app.get('/*splat', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
