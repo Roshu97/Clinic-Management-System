@@ -45,7 +45,7 @@ app.post('/api/login', async (req, res) => {
 const frontendPath = path.join(__dirname, '..', 'direction-frontend'); 
 app.use(express.static(frontendPath));
 
-app.get('*', (req, res) => {
+app.get('/*splat', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
 
