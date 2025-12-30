@@ -4,25 +4,22 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const apiRoutes = require('./routes/apiRoutes'); 
+const User = require('./models/User');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect('mongodb://127.0.0.1:27017/clinic_cms')
+// --- DATABASE CONNECTION ---
+// Use the Environment Variable for Render, fallback to local for development
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/clinic_cms';
+
+mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
+// --- API ROUTES ---
 app.use('/api', apiRoutes);
-
-const USERS = [
-    { id: 1, username: 'dr_smith', password: '123', role: 'doctor', name: 'Dr. Smith' },
-    { id: 2, username: 'admin',    password: '123', role: 'receptionist', name: 'Front Desk' },
-    { id: 3, username: 'pharmacy', password: '123', role: 'pharmacist', name: 'Main Pharmacy' },
-    { id: 4, username: 'boss',     password: '123', role: 'admin', name: 'Clinic Manager' }
-];
-
-const User = require('./models/User');
 
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
@@ -37,23 +34,21 @@ app.post('/api/login', async (req, res) => {
             res.status(401).json({ error: 'Invalid credentials' });
         }
     } catch (err) {
+        // Log the actual error to Render logs so you can see it
+        console.error("Login Error:", err);
         res.status(500).json({ error: 'Server error during login' });
     }
 });
 
-const frontendPath = path.join(__dirname, '../direction-frontend'); 
+// --- FRONTEND SERVING ---
+// This path is crucial for Render deployment
+const frontendPath = path.join(__dirname, '..', 'direction-frontend'); 
 app.use(express.static(frontendPath));
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
 
+// --- START SERVER ---
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
-
-const MONGO_URI = process.env.MONGO_URI; // We will set this in Render
-
-
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
-    .catch(err => console.error(err));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
