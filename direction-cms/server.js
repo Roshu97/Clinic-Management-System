@@ -40,40 +40,25 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// // --- FRONTEND SERVING ---
-// // This path is crucial for Render deployment
-// // 1. Correct the path logic to go UP one level properly
-// const frontendPath = path.resolve(__dirname, '..', 'direction-frontend');
+// --- FRONTEND SERVING ---
+// This path is crucial for Render deployment
+// 1. Correct the path logic to go UP one level properly
+const frontendPath = path.resolve(__dirname, '..', 'direction-frontend');
 
-// // 2. Add a simple log to verify the path in Render logs
-// console.log("Serving frontend from:", frontendPath);
+// 2. Add a simple log to verify the path in Render logs
+console.log("Serving frontend from:", frontendPath);
 
-// // 3. Static files MUST be served BEFORE the catch-all route
-// app.use(express.static(frontendPath));
-
-// // 4. API Routes
-// app.use('/api', apiRoutes);
-
-// // 5. The catch-all route (Express 5 compatible)
-// // Use /*splat instead of just *
-// app.get('/*splat', (req, res) => {
-//     res.sendFile(path.join(frontendPath, 'login.html'));
-// });
-
-/* ---------- FRONTEND ---------- */
-const frontendPath = path.join(__dirname, 'direction-frontend');
-console.log('Serving frontend from:', frontendPath);
-
+// 3. Static files MUST be served BEFORE the catch-all route
 app.use(express.static(frontendPath));
 
-/* ---------- API ---------- */
+// 4. API Routes
 app.use('/api', apiRoutes);
 
-/* ---------- CATCH-ALL ---------- */
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'login.html'));
+// 5. The catch-all route (Express 5 compatible)
+// Use /*splat instead of just *
+app.get('/*splat', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'login.html'));
 });
-
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
