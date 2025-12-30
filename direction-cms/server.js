@@ -58,6 +58,29 @@ app.get('/*splat', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
 
+// Add this to the bottom of server.js
+const User = require('./models/User');
+
+async function createAdmin() {
+    try {
+        // Delete any existing 'boss' to be sure we have a fresh start
+        await User.deleteOne({ username: 'boss' });
+        
+        const admin = new User({
+            username: 'boss',
+            password: '123',
+            role: 'admin',
+            name: 'System Admin'
+        });
+        
+        await admin.save();
+        console.log("✅ Admin 'boss' created with password '123'");
+    } catch (err) {
+        console.error("Seed error:", err);
+    }
+}
+createAdmin();
+
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
