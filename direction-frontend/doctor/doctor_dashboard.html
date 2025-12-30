@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | Direction CMS</title>
+    <!-- <link rel="stylesheet" href="../responsive.css"> -->
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Direction CMS - Doctor Panel</div>
+        <div class="user-info">
+            <span>Dr. Smith</span>
+            <button class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="card full-width">
+            <div class="header-row">
+                <h2>🩺 Waiting Room Queue</h2>
+                <button class="btn-secondary" onclick="fetchQueue()"><i class="fas fa-sync"></i> Refresh</button>
+            </div>
+            <div class="search-box">
+                <h3>🔍 Search Patient History</h3>
+                <input type="text" id="searchInput" placeholder="Enter Name or Contact Number...">
+                <button class="btn-primary" onclick="searchHistory()">Search</button>
+                <div id="searchResults" style="width: 100%;"></div>
+            </div>
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Patient Name</th>
+                        <th>Age</th>
+                        <th>Reason (History)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="queueTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Loading patients...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <div id="prescriptionModal" class="modal hidden">
+        <div class="form-group">
+    <label>Prescription / Medications</label>
+    <div style="display: flex; gap: 10px; margin-bottom: 5px;">
+        <input type="text" id="medSearch" placeholder="Check stock (e.g. Paracetamol)..." style="flex:1;">
+        <button type="button" class="btn-secondary" onclick="checkMedStock()">Check</button>
+    </div>
+    <div id="stockCheckResult" style="font-size: 0.85rem; margin-bottom: 10px;"></div>
+    
+    <textarea id="medicines" rows="4" placeholder="Enter medications here..."></textarea>
+</div>
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>💊 Prescribe Medicine</h3>
+            <p><strong>Patient:</strong> 
+                <span id="modalPatientName">--</span> (Token: <span id="modalToken">--</span>) </p>
+            
+            <form id="prescriptionForm">
+                <input type="hidden" id="modalVisitId">
+                
+                <div class="form-group">
+                    <label>Diagnosis / Notes</label>
+                    <textarea id="diagnosis" rows="2" placeholder="e.g. Viral Fever"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Medications</label>
+                    <textarea id="medicines" rows="4" placeholder="e.g. Paracetamol 500mg - 2x daily"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Submit & Finish Visit</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="doctor_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard | Direction CMS</title>
+    <link rel="stylesheet" href="./style.css">  
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Direction CMS</div>
+        <div class="user-info">
+            <span>Welcome, Receptionist</span>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="card form-section">
+            <h2>🏥 New Patient Entry</h2>
+            <form id="patientForm">
+                <div class="form-group">
+                    <label for="name">Patient Name</label>
+                    <input type="text" id="name" name="name" required placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" required placeholder="e.g. 30">
+                </div>
+
+                <div class="form-group">
+                    <label for="contact">Contact Number</label>
+                    <input type="tel" id="contact" name="contact" required placeholder="123-456-7890">
+                </div>
+
+                <div class="form-group">
+                    <label for="history">Medical History (Brief)</label>
+                    <textarea id="history" name="history" rows="3" placeholder="Fever, Allergy, etc."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Generate Token</button>
+            </form>
+        </section>
+        <section class="card full-width">
+    <h2>💰 Pending Bills</h2>
+    <button class="btn-secondary" onclick="fetchPendingBills()">Refresh List</button>
+    
+    <table class="queue-table" style="margin-top:15px;">
+        <thead>
+            <tr>
+                <th>Token</th>
+                <th>Patient Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="billingTableBody">
+            <tr><td colspan="3">No pending bills.</td></tr>
+        </tbody>
+    </table>
+</section>
+
+        <section class="info-panel">
+            <div id="tokenCard" class="card token-card hidden">
+                <h3>Token Generated Successfully</h3>
+                <div class="token-number" id="displayToken">#00</div>
+                <p>Patient: <span id="displayName">--</span></p>
+                <button class="btn-secondary" onclick="resetForm()">New Entry</button>
+            </div>
+
+            <div class="card queue-list">
+                <h3>Current Queue</h3>
+                <ul id="queueList">
+                    <li>Loading queue...</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

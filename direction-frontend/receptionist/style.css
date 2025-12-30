@@ -1,0 +1,216 @@
+/* =====================
+   Global Reset & Base
+===================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f7fb;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* =====================
+   Navbar
+===================== */
+.navbar {
+    background: linear-gradient(135deg, #2b6cb0, #2c5282);
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .logo {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-logout {
+    background: #e53e3e;
+    border: none;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-logout:hover {
+    background: #c53030;
+}
+
+/* =====================
+   Layout Container
+===================== */
+.container {
+    padding: 25px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 25px;
+}
+
+/* =====================
+   Cards
+===================== */
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.card h2,
+.card h3 {
+    margin-bottom: 15px;
+    color: #2b6cb0;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+/* =====================
+   Form Styles
+===================== */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e0;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #2b6cb0;
+}
+
+/* =====================
+   Buttons
+===================== */
+.btn-primary {
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #2c5282;
+}
+
+.btn-secondary {
+    background: #edf2f7;
+    color: #2b6cb0;
+    border: 1px solid #2b6cb0;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+/* =====================
+   Table (Pending Bills)
+===================== */
+.queue-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.queue-table th,
+.queue-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.queue-table th {
+    background: #edf2f7;
+    color: #2b6cb0;
+    font-weight: 700;
+}
+
+/* =====================
+   Info Panel
+===================== */
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Token Card */
+.token-card {
+    text-align: center;
+    border-left: 6px solid #38a169;
+}
+
+.token-number {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #38a169;
+    margin: 10px 0;
+}
+
+/* Queue List */
+.queue-list ul {
+    list-style: none;
+}
+
+.queue-list li {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* =====================
+   Utility
+===================== */
+.hidden {
+    display: none;
+}
+
+/* =====================
+   Responsive
+===================== */
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}

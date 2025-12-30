@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy | Direction CMS</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Direction CMS - Pharmacy</div>
+        <div class="user-info">
+            <span id="pharmacistName">Welcome, Pharmacist</span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="card">
+            <div class="header-row">
+                <h2>📦 Medicine Inventory</h2>
+                <button class="btn-primary" onclick="showAddStockModal()">+ Add New Medicine</button>
+            </div>
+            
+            <div class="search-box" style="margin-bottom: 20px;">
+                <input type="text" id="inventorySearch" placeholder="Search stock by name..." onkeyup="filterInventory()" style="width: 100%; padding: 10px;">
+            </div>
+
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Medicine Name</th>
+                        <th>Current Stock</th>
+                        <th>Price ($)</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <div class="header-row">
+                <h2>💊 Pending Prescriptions</h2>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Patients who have cleared their bills and are waiting for medication.</p>
+            
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Patient Name</th>
+                        <th>Prescribed Medicines</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="prescriptionTableBody">
+                    </tbody>
+            </table>
+        </section>
+    </div>
+
+    <div id="stockModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeStockModal()">&times;</span>
+            <h3>Add Medicine to Inventory</h3>
+            <form id="stockForm">
+                <div class="form-group">
+                    <label>Medicine Name</label>
+                    <input type="text" id="medName" required placeholder="e.g. Paracetamol">
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" id="medStock" required placeholder="e.g. 100">
+                </div>
+                <div class="form-group">
+                    <label>Price per Unit</label>
+                    <input type="number" id="medPrice" step="0.01" required placeholder="e.g. 5.50">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Save to Inventory</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="pharmacy_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | Direction CMS</title>
+    <link rel="stylesheet" href="./style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Direction CMS - Admin</div>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="container">
+        <div class="admin-section-header">
+            <h2>📊 Daily Financial Summary</h2>
+            <button class="btn-secondary" onclick="fetchDailyReport()">Refresh Report</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div id="totalRevenue" class="value revenue">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <h3>Patients Treated</h3>
+                <div id="totalPatients" class="value patients">0</div>
+            </div>
+        </div>
+        
+        <section class="card" style="margin-bottom: 30px;">
+            <div class="admin-section-header">
+                <h2>📈 Revenue Trend (Last 7 Days)</h2>
+            </div>
+            <div style="height: 300px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="admin-section-header">
+                <h3>📜 Transaction History</h3>
+                <button class="btn-success" onclick="exportReportToCSV()">📥 Export to Excel (CSV)</button>
+            </div>
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Amount Paid</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <tr><td colspan="2">No transactions today.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card" style="margin-top: 30px;">
+            <div class="admin-section-header">
+                <h2>👥 Staff Management</h2>
+                <button class="btn-primary" onclick="document.getElementById('userModal').classList.remove('hidden')">
+                    + Add New Staff
+                </button>
+            </div>
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Joined Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    </tbody>
+            </table>
+        </section>
+    </div>
+
+    <div id="userModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="document.getElementById('userModal').classList.add('hidden')">&times;</span>
+            <h3>Create Staff Account</h3>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="staffName" required placeholder="e.g. Dr. Alice">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="staffUser" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="staffPass" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="staffRole" style="width: 100%; padding: 10px; border-radius: 6px;">
+                        <option value="doctor">Doctor</option>
+                        <option value="receptionist">Receptionist</option>
+                        <option value="pharmacist">Pharmacist</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">Create User</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        async function fetchDailyReport() {
+            try {
+                const res = await fetch(`${API_URL}/admin/daily-report`);
+                const data = await res.json();
+
+                document.getElementById('totalRevenue').innerText = `$${data.totalEarnings.toFixed(2)}`;
+                document.getElementById('totalPatients').innerText = data.patientCount;
+
+                const tbody = document.getElementById('reportTableBody');
+                if (data.patients.length > 0) {
+                    tbody.innerHTML = data.patients.map(p => `
+                        <tr>
+                            <td>${p.name}</td>
+                            <td>$${p.amount.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+
+        window.onload = fetchDailyReport;
+
+        function exportReportToCSV() {
+    const table = document.querySelector(".queue-table");
+    let csv = [];
+    const rows = table.querySelectorAll("tr");
+    
+    for (const row of rows) {
+        const cols = row.querySelectorAll("td, th");
+        const rowData = Array.from(cols).map(col => `"${col.innerText}"`);
+        csv.push(rowData.join(","));
+    }
+
+    const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Clinic_Report_${new Date().toLocaleDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+}
+
+async function fetchUsers() {
+    const res = await fetch(`${API_URL}/admin/users`);
+    const users = await res.json();
+    const tbody = document.getElementById('userTableBody');
+    
+    tbody.innerHTML = users.map(u => `
+        <tr>
+            <td><strong>${u.name}</strong></td>
+            <td>${u.username}</td>
+            <td><span class="status-badge status-instock">${u.role.toUpperCase()}</span></td>
+            <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn-logout" style="padding: 5px 10px; font-size: 0.8rem;" 
+                    onclick="deleteUser('${u._id}', '${u.name}')">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+document.getElementById('userForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+        name: document.getElementById('staffName').value,
+        username: document.getElementById('staffUser').value,
+        password: document.getElementById('staffPass').value,
+        role: document.getElementById('staffRole').value
+    };
+
+    const res = await fetch(`${API_URL}/admin/users/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("User added!");
+        document.getElementById('userModal').classList.add('hidden');
+        fetchUsers();
+    }
+});
+
+// Update window.onload to include fetchUsers()
+window.onload = () => {
+    fetchDailyReport();
+    fetchUsers();
+};
+
+async function deleteUser(id, name) {
+    if (!confirm(`Are you sure you want to delete account for ${name}? This cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/admin/users/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            alert("User removed from system.");
+            fetchUsers(); // Refresh the list
+        } else {
+            alert("Failed to delete user.");
+        }
+    } catch (err) {
+        console.error("Delete error:", err);
+    }
+}
+
+// admin.html <script>
+
+let myChart; // Variable to store the chart instance
+
+async function renderRevenueChart() {
+    try {
+        const res = await fetch(`${API_URL}/admin/revenue-stats`);
+        const stats = await res.json();
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        // If chart already exists, destroy it before creating a new one (important for refreshes)
+        if (myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: stats.map(s => s.day),
+                datasets: [{
+                    label: 'Revenue ($)',
+                    data: stats.map(s => s.amount),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4 // Makes the line curved
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    } catch (err) { console.error(err); }
+}
+
+// Update your window.onload
+window.onload = () => {
+    fetchDailyReport();
+    fetchUsers();
+    renderRevenueChart();
+};
+
+    </script>
+</body>
+</html>
