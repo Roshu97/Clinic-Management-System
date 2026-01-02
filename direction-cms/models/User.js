@@ -8,14 +8,17 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true }
 });
 
-// Logic to hash password before saving
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
+// FIXED: Removed 'next' and used standard async flow
+userSchema.pre('save', async function() {
+    if (!this.isModified('password')) return;
+    
+    try {
+        this.password = await bcrypt.hash(this.password, 10);
+    } catch (err) {
+        throw new Error('Password hashing failed');
+    }
 });
 
-// Logic to compare passwords during login
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
