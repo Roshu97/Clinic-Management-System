@@ -26,8 +26,10 @@ app.use('/api', apiRoutes);
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = await User.findOne({ username, password });
-        if (user) {
+        const user = await User.findOne({ username }); // Find by username only first
+
+        if (user && await user.comparePassword(password)) {
+            // Success!
             res.json({ 
                 message: 'Success', 
                 user: { role: user.role, name: user.name } 
@@ -37,7 +39,7 @@ app.post('/api/login', async (req, res) => {
         }
     } catch (err) {
         console.error("Login Error:", err);
-        res.status(500).json({ error: 'Server error during login' });
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
@@ -59,18 +61,20 @@ app.get('/*splat', (req, res) => {
 // --- SEED FUNCTION ---
 async function createAdmin() {
     try {
-        // This ensures the 'boss' user exists with the correct credentials
-        await User.deleteOne({ username: 'boss' });
+        const existing = await User.findOne({ username: 'boss' });
+        if (existing) await User.deleteOne({ username: 'boss' });
+
+        // The .pre('save') hook in our model will automatically hash '123'
         const admin = new User({
             username: 'boss',
-            password: '123',
+            password: '123', 
             role: 'admin',
             name: 'System Admin'
         });
         await admin.save();
-        console.log("✅ Admin 'boss' created with password '123'");
+        console.log("✅ Secure Admin 'boss' created!");
     } catch (err) {
-        console.error("❌ Seed error:", err);
+        console.error("Seed error:", err);
     }
 }
 
