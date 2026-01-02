@@ -31,12 +31,26 @@ if(logoutBtn) {
 // 1. Fetch Waiting Queue
 async function fetchQueue() {
     const tableBody = document.getElementById('queueTableBody');
-    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Refreshing...</td></tr>';
+    // Get the token we saved during login
+    const token = localStorage.getItem('token'); 
 
     try {
-        const response = await fetch(`${API_URL}/doctor/queue`);
-        const patients = await response.json();
+        const response = await fetch(`${API_URL}/doctor/queue`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // THE IMPORTANT PART
+                'Content-Type': 'application/json'
+            }
+        });
 
+        // If the token is expired or missing, send them back to login
+        if (response.status === 401 || response.status === 400) {
+            alert("Session expired. Please login again.");
+            window.location.href = '../login.html';
+            return;
+        }
+
+        const patients = await response.json();
         renderTable(patients);
     } catch (error) {
         console.error("Error fetching queue", error);

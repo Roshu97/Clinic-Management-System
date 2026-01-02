@@ -3,8 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const jwt = require('jsonwebtoken'); // All requires at the top
 const apiRoutes = require('./routes/apiRoutes'); 
-const User = require('./models/User'); // Only one declaration here
+const User = require('./models/User');
 
 const app = express();
 app.use(express.json());
@@ -16,22 +17,45 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/clinic_cms
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB Connected');
-        createAdmin(); // Seed admin after successful connection
+        createAdmin(); 
     })
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// --- API ROUTES ---
-app.use('/api', apiRoutes);
+// --- SECURITY MIDDLEWARE (The Gatekeeper) ---
+const protect = (req, res, next) => {
+    // Looks for 'Bearer <token>' in the Authorization header
+    const token = req.headers.authorization?.split(' ')[1];
 
+    if (!token) {
+        return res.status(401).json({ error: 'Access denied. No token provided.' });
+    }
+
+    try {
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = verified; // Stores user ID and Role for use in routes
+        next(); 
+    } catch (err) {
+        res.status(400).json({ error: 'Invalid or expired token' });
+    }
+};
+
+// --- AUTHENTICATION ROUTE ---
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = await User.findOne({ username }); // Find by username only first
+        const user = await User.findOne({ username });
 
         if (user && await user.comparePassword(password)) {
-            // Success!
+            // Generate the secure token
+            const token = jwt.sign(
+                { id: user._id, role: user.role }, 
+                process.env.JWT_SECRET, 
+                { expiresIn: '24h' }
+            );
+
             res.json({ 
                 message: 'Success', 
+                token: token, 
                 user: { role: user.role, name: user.name } 
             });
         } else {
@@ -43,17 +67,18 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// --- API ROUTES ---
+// You can now protect the entire apiRoutes folder like this:
+app.use('/api', protect, apiRoutes); 
+
 // --- FRONTEND SERVING ---
 const frontendPath = path.resolve(__dirname, '..', 'direction-frontend');
-console.log("✅ Serving frontend from:", frontendPath);
-
 app.use(express.static(frontendPath));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
 
-// Express 5 compatible named wildcard
 app.get('/*splat', (req, res) => {
     res.sendFile(path.join(frontendPath, 'login.html'));
 });
@@ -64,7 +89,6 @@ async function createAdmin() {
         const existing = await User.findOne({ username: 'boss' });
         if (existing) await User.deleteOne({ username: 'boss' });
 
-        // The .pre('save') hook in our model will automatically hash '123'
         const admin = new User({
             username: 'boss',
             password: '123', 
