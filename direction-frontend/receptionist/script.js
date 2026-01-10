@@ -164,4 +164,5 @@ function printBill(patientName, amount, token) {
 // Auto-load on startup
 window.onload = function() {
     fetchPendingBills();
+    renderRevenueChart();
 };

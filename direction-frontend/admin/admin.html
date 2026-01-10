@@ -230,6 +230,7 @@ document.getElementById('userForm').addEventListener('submit', async (e) => {
 window.onload = () => {
     fetchDailyReport();
     fetchUsers();
+    renderRevenueChart();
 };
 
 async function deleteUser(id, name) {
