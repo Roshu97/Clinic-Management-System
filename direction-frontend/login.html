@@ -40,7 +40,6 @@
         const password = document.getElementById('password').value;
         const errorMsg = document.getElementById('errorMsg');
 
-        // Reset error
         errorMsg.innerText = "";
 
         try {
@@ -53,10 +52,16 @@
             const data = await res.json();
 
             if (res.ok) {
-                // Save user info to browser
-                localStorage.setItem('user', JSON.stringify(data.user));
+                // IMPORTANT: We merge the token INTO the user object 
+                // so Admin.html can find userData.token
+                const sessionData = {
+                    ...data.user,
+                    token: data.token
+                };
                 
-                // ALL REDIRECTS MUST BE INSIDE THIS BLOCK
+                localStorage.setItem('user', JSON.stringify(sessionData));
+                
+                // Redirect based on role
                 if (data.user.role === 'doctor') {
                     window.location.href = 'doctor/doctor_dashboard.html';
                 } 
@@ -73,15 +78,9 @@
                 errorMsg.innerText = data.error || "Login failed";
             }
         } catch (err) {
-            console.error(err);
+            console.error("Login Error:", err);
             errorMsg.innerText = "Cannot connect to server.";
         }
-
-        const result = await response.json();
-            if (response.ok) {
-                localStorage.setItem('token', result.token);
-                localStorage.setItem('user', JSON.stringify(result.user));
-            }
     }); 
 </script>
 </body>
