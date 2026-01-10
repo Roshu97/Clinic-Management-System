@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Direction CMS</title>
     <link rel="stylesheet" href="./style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -74,8 +75,7 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody">
-                    </tbody>
+                <tbody id="userTableBody"></tbody>
             </table>
         </section>
     </div>
@@ -111,36 +111,168 @@
         </div>
     </div>
 
-
     <script>
-
         const API_URL = window.location.origin + '/api';
-const userData = JSON.parse(localStorage.getItem('user'));
-const token = userData ? userData.token : null;
+        const userData = JSON.parse(localStorage.getItem('user'));
+        let myChart;
 
-// Redirect if not logged in or not admin
-if (!token) {
-    window.location.href = '../login.html';
-}
-        
+        // --- AUTH PROTECTION ---
+        // Checks for existence, token, AND specifically the 'admin' role
+        if (!userData || !userData.token || userData.role !== 'admin') {
+            console.warn("Access denied: Not an admin or not logged in.");
+            window.location.href = '../login.html';
+        }
+
+        const token = userData ? userData.token : null;
+
+        // --- DASHBOARD FUNCTIONS ---
+
         async function fetchDailyReport() {
             try {
-                const res = await fetch(`${API_URL}/admin/daily-report`);
-                const data = await res.json();
+                const res = await fetch(`${API_URL}/admin/daily-report`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (res.status === 401) logout(); // Handle expired tokens
 
+                const data = await res.json();
                 document.getElementById('totalRevenue').innerText = `$${data.totalEarnings.toFixed(2)}`;
                 document.getElementById('totalPatients').innerText = data.patientCount;
 
                 const tbody = document.getElementById('reportTableBody');
-                if (data.patients.length > 0) {
+                if (data.patients && data.patients.length > 0) {
                     tbody.innerHTML = data.patients.map(p => `
                         <tr>
                             <td>${p.name}</td>
                             <td>$${p.amount.toFixed(2)}</td>
                         </tr>
                     `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="2">No transactions today.</td></tr>';
                 }
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("Report fetch error:", err); }
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_URL}/admin/users`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (res.status === 401) logout();
+
+                const users = await res.json();
+                const tbody = document.getElementById('userTableBody');
+
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td><strong>${u.name}</strong></td>
+                        <td>${u.username}</td>
+                        <td><span class="status-badge status-instock">${u.role.toUpperCase()}</span></td>
+                        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn-logout" onclick="deleteUser('${u._id}', '${u.name}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error("Fetch users error:", err); }
+        }
+
+        async function renderRevenueChart() {
+            try {
+                const res = await fetch(`${API_URL}/admin/revenue-stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const stats = await res.json();
+
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                if (myChart) myChart.destroy();
+
+                myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: stats.map(s => s.day),
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: stats.map(s => s.amount),
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            } catch (err) { console.error("Chart error:", err); }
+        }
+
+        // --- USER ACTIONS ---
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('staffName').value,
+                username: document.getElementById('staffUser').value,
+                password: document.getElementById('staffPass').value,
+                role: document.getElementById('staffRole').value
+            };
+
+            const res = await fetch(`${API_URL}/admin/users/add`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("User added!");
+                document.getElementById('userModal').classList.add('hidden');
+                document.getElementById('userForm').reset();
+                fetchUsers();
+            }
+        });
+
+        async function deleteUser(id, name) {
+            if (!confirm(`Are you sure you want to delete account for ${name}?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert("User removed.");
+                    fetchUsers();
+                }
+            } catch (err) { console.error("Delete error:", err); }
+        }
+
+        function exportReportToCSV() {
+            const table = document.querySelector(".queue-table");
+            let csv = [];
+            const rows = table.querySelectorAll("tr");
+            for (const row of rows) {
+                const cols = row.querySelectorAll("td, th");
+                const rowData = Array.from(cols).map(col => `"${col.innerText}"`);
+                csv.push(rowData.join(","));
+            }
+            const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Report_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function logout() {
@@ -148,158 +280,14 @@ if (!token) {
             window.location.href = '../login.html';
         }
 
-        window.onload = fetchDailyReport;
-
-        function exportReportToCSV() {
-    const table = document.querySelector(".queue-table");
-    let csv = [];
-    const rows = table.querySelectorAll("tr");
-    
-    for (const row of rows) {
-        const cols = row.querySelectorAll("td, th");
-        const rowData = Array.from(cols).map(col => `"${col.innerText}"`);
-        csv.push(rowData.join(","));
-    }
-
-    const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Clinic_Report_${new Date().toLocaleDateString()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-}
-
-async function fetchUsers() {
-    try {
-        const res = await fetch(`${API_URL}/admin/users`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        const users = await res.json();
-        const tbody = document.getElementById('userTableBody');
-
-        tbody.innerHTML = users.map(u => `
-            <tr>
-                <td><strong>${u.name}</strong></td>
-                <td>${u.username}</td>
-                <td>
-                    <span class="status-badge status-instock">
-                        ${u.role.toUpperCase()}
-                    </span>
-                </td>
-                <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-                <td>
-                    <button class="btn-logout"
-                        onclick="deleteUser('${u._id}', '${u.name}')">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-
-    } catch (err) {
-        console.error("Fetch users error:", err);
-    }
-}
-
-
-document.getElementById('userForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const payload = {
-        name: document.getElementById('staffName').value,
-        username: document.getElementById('staffUser').value,
-        password: document.getElementById('staffPass').value,
-        role: document.getElementById('staffRole').value
-    };
-
-    const res = await fetch(`${API_URL}/admin/users/add`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-        alert("User added!");
-        document.getElementById('userModal').classList.add('hidden');
-        fetchUsers();
-    }
-});
-
-// Update window.onload to include fetchUsers()
-window.onload = () => {
-    fetchDailyReport();
-    fetchUsers();
-    renderRevenueChart();
-};
-
-async function deleteUser(id, name) {
-    if (!confirm(`Are you sure you want to delete account for ${name}? This cannot be undone.`)) {
-        return;
-    }
-
-    try {
-        const res = await fetch(`${API_URL}/admin/users/${id}`, {
-            method: 'DELETE'
-        });
-
-        if (res.ok) {
-            alert("User removed from system.");
-            fetchUsers(); // Refresh the list
-        } else {
-            alert("Failed to delete user.");
-        }
-    } catch (err) {
-        console.error("Delete error:", err);
-    }
-}
-
-// admin.html <script>
-
-let myChart; // Variable to store the chart instance
-
-async function renderRevenueChart() {
-    try {
-        const res = await fetch(`${API_URL}/admin/revenue-stats`);
-        const stats = await res.json();
-
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        
-        // If chart already exists, destroy it before creating a new one (important for refreshes)
-        if (myChart) myChart.destroy();
-
-        myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: stats.map(s => s.day),
-                datasets: [{
-                    label: 'Revenue ($)',
-                    data: stats.map(s => s.amount),
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4 // Makes the line curved
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true }
-                }
+        // --- SINGLE INITIALIZATION ---
+        window.onload = () => {
+            if (token) {
+                fetchDailyReport();
+                fetchUsers();
+                renderRevenueChart();
             }
-        });
-    } catch (err) { console.error(err); }
-}
-
-// Update your window.onload
-window.onload = () => {
-    fetchDailyReport();
-    fetchUsers();
-    renderRevenueChart();
-};
-
+        };
     </script>
 </body>
 </html>
