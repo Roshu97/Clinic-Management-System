@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchInventory() {
     const tbody = document.getElementById('inventoryTableBody');
     try {
-        const res = await fetch(`${API_URL}/pharmacy/inventory`);
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const res = await fetch(`${API_URL}/pharmacy/inventory`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         const items = await res.json();
         
         tbody.innerHTML = items.map(item => `
@@ -63,16 +66,24 @@ document.getElementById('stockForm').addEventListener('submit', async (e) => {
         price: parseFloat(document.getElementById('medPrice').value)
     };
 
-    const res = await fetch(`${API_URL}/pharmacy/inventory/add`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+    try {
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const res = await fetch(`${API_URL}/pharmacy/inventory/add`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  
+            },
+            body: JSON.stringify(payload)
+        });
 
-    if (res.ok) {
-        alert("New medicine added successfully!");
-        closeStockModal();
-        fetchInventory();
+        if (res.ok) {
+            alert("New medicine added successfully!");
+            closeStockModal();
+            fetchInventory();
+        }
+    } catch (err) {
+        console.error("Failed to add medicine:", err);
     }
 });
 
@@ -80,15 +91,18 @@ document.getElementById('stockForm').addEventListener('submit', async (e) => {
 async function fetchPendingPrescriptions() {
     const tbody = document.getElementById('prescriptionTableBody');
     try {
-        const res = await fetch(`${API_URL}/pharmacy/pending`);
-        const patients = await res.json();
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const res = await fetch(`${API_URL}/pharmacy/pending`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const prescriptions = await res.json();
 
-        if (patients.length === 0) {
+        if (prescriptions.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No prescriptions waiting.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = patients.map(p => `
+        tbody.innerHTML = prescriptions.map(p => `  
             <tr>
                 <td>#${p.token_number}</td>
                 <td>${p.name}</td>
@@ -107,9 +121,13 @@ async function dispenseMedication(visitId, medicineText) {
     if (!confirm("Hand over medication and update inventory?")) return;
 
     try {
+        const token = localStorage.getItem('token'); // Get token from localStorage
         const res = await fetch(`${API_URL}/pharmacy/dispense`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  
+            },
             body: JSON.stringify({ 
                 visitId: visitId, 
                 medicines: medicineText 

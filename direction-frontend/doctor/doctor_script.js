@@ -119,9 +119,13 @@ document.getElementById('prescriptionForm').addEventListener('submit', async (e)
     };
 
     try {
+        const token = localStorage.getItem('token'); // Get token from localStorage
         const response = await fetch(`${API_URL}/doctor/prescribe`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Authorization': `Bearer ${token}`, // Add token to headers
+                'Content-Type': 'application/json' 
+            },
             body: JSON.stringify(payload)
         });
 
@@ -139,6 +143,7 @@ document.getElementById('prescriptionForm').addEventListener('submit', async (e)
         alert('Failed to save prescription.');
     }
 });
+//Add Authorization header to patient search API request
 async function searchHistory() {
     const keyword = document.getElementById('searchInput').value;
     if(!keyword) return alert("Please enter a name");
@@ -147,7 +152,13 @@ async function searchHistory() {
     resultDiv.innerHTML = "Searching...";
 
     try {
-        const res = await fetch(`${API_URL}/patient/search?keyword=${keyword}`);
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const res = await fetch(`${API_URL}/patient/search?keyword=${keyword}`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`, // Add token to headers
+                'Content-Type': 'application/json' 
+            }
+        });
         const history = await res.json();
 
         if (history.length === 0) {
@@ -186,6 +197,7 @@ window.onclick = function(event) {
 
 // doctor_script.js
 
+//Add Authorization header to medicine stock check API request
 async function checkMedStock() {
     const query = document.getElementById('medSearch').value;
     const resultDiv = document.getElementById('stockCheckResult');
@@ -193,7 +205,13 @@ async function checkMedStock() {
     if (!query) return;
 
     try {
-        const res = await fetch(`${API_URL}/pharmacy/inventory`);
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const res = await fetch(`${API_URL}/pharmacy/inventory`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`, // Add token to headers
+                'Content-Type': 'application/json' 
+            }   
+        });
         const inventory = await res.json();
         
         // Find medicine that matches the query

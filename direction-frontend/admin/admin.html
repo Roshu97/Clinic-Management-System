@@ -113,7 +113,15 @@
 
 
     <script>
+
         const API_URL = window.location.origin + '/api';
+const userData = JSON.parse(localStorage.getItem('user'));
+const token = userData ? userData.token : null;
+
+// Redirect if not logged in or not admin
+if (!token) {
+    window.location.href = '../login.html';
+}
         
         async function fetchDailyReport() {
             try {
@@ -163,25 +171,38 @@
 }
 
 async function fetchUsers() {
-    const res = await fetch(`${API_URL}/admin/users`);
-    const users = await res.json();
-    const tbody = document.getElementById('userTableBody');
-    
-    tbody.innerHTML = users.map(u => `
-        <tr>
-            <td><strong>${u.name}</strong></td>
-            <td>${u.username}</td>
-            <td><span class="status-badge status-instock">${u.role.toUpperCase()}</span></td>
-            <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-            <td>
-                <button class="btn-logout" style="padding: 5px 10px; font-size: 0.8rem;" 
-                    onclick="deleteUser('${u._id}', '${u.name}')">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </td>
-        </tr>
-    `).join('');
+    try {
+        const res = await fetch(`${API_URL}/admin/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const users = await res.json();
+        const tbody = document.getElementById('userTableBody');
+
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td><strong>${u.name}</strong></td>
+                <td>${u.username}</td>
+                <td>
+                    <span class="status-badge status-instock">
+                        ${u.role.toUpperCase()}
+                    </span>
+                </td>
+                <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn-logout"
+                        onclick="deleteUser('${u._id}', '${u.name}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+    } catch (err) {
+        console.error("Fetch users error:", err);
+    }
 }
+
 
 document.getElementById('userForm').addEventListener('submit', async (e) => {
     e.preventDefault();

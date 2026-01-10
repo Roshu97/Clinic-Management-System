@@ -31,9 +31,13 @@ document.getElementById('patientForm').addEventListener('submit', async function
     };
 
     try {
+        const token = localStorage.getItem('token'); // Get token from localStorage
         const response = await fetch(`${API_URL}/patient/add`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Add token to headers
+            },
             body: JSON.stringify(formData)
         });
 
@@ -73,7 +77,10 @@ async function fetchPendingBills() {
     tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
 
     try {
-        const res = await fetch(`${API_URL}/billing/pending`);
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const res = await fetch(`${API_URL}/billing/pending`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         const patients = await res.json();
 
         tbody.innerHTML = '';
@@ -107,7 +114,10 @@ async function generateBill(visitId, name, token) {
     try {
         const res = await fetch(`${API_URL}/billing/create`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentUser.token}`  
+            },
             body: JSON.stringify({ visitId: visitId, amount: 50.00 })
         });
 
