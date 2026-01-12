@@ -8,6 +8,7 @@ if (!currentUser || currentUser.role !== 'pharmacist') {
 
 function logout() {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     window.location.href = '../login.html';
 }
 
@@ -21,7 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchInventory() {
     const tbody = document.getElementById('inventoryTableBody');
     try {
-        const token = localStorage.getItem('token'); // Get token from localStorage
+        const token = localStorage.getItem('token'); 
+        if (!token) {
+            window.location.href = '../login.html';
+            return;
+        }
         const res = await fetch(`${API_URL}/pharmacy/inventory`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -91,7 +96,8 @@ document.getElementById('stockForm').addEventListener('submit', async (e) => {
 async function fetchPendingPrescriptions() {
     const tbody = document.getElementById('prescriptionTableBody');
     try {
-        const token = localStorage.getItem('token'); // Get token from localStorage
+        const token = localStorage.getItem('token');
+        if (!token) return;
         const res = await fetch(`${API_URL}/pharmacy/pending`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });

@@ -114,16 +114,14 @@
     <script>
         const API_URL = window.location.origin + '/api';
         const userData = JSON.parse(localStorage.getItem('user'));
+        const token = localStorage.getItem('token');
         let myChart;
 
         // --- AUTH PROTECTION ---
-        // Checks for existence, token, AND specifically the 'admin' role
-        if (!userData || !userData.token || userData.role !== 'admin') {
+        if (!userData || !token || userData.role !== 'admin') {
             console.warn("Access denied: Not an admin or not logged in.");
             window.location.href = '../login.html';
         }
-
-        const token = userData ? userData.token : null;
 
         // --- DASHBOARD FUNCTIONS ---
 
@@ -277,6 +275,7 @@
 
         function logout() {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             window.location.href = '../login.html';
         }
 

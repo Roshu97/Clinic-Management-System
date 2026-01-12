@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 3. Logout Function
 function logout() {
-    localStorage.removeItem('user'); // Clear session
+    localStorage.removeItem('user'); 
+    localStorage.removeItem('token');
     window.location.href = '../login.html';
 }
 
@@ -33,6 +34,12 @@ async function fetchQueue() {
     const tableBody = document.getElementById('queueTableBody');
     // Get the token we saved during login
     const token = localStorage.getItem('token'); 
+
+    if (!token) {
+        console.warn("No token found, redirecting to login.");
+        window.location.href = '../login.html';
+        return;
+    }
 
     try {
         const response = await fetch(`${API_URL}/doctor/queue`, {

@@ -14,6 +14,7 @@ app.use(cors());
 // --- DATABASE CONNECTION ---
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/clinic_cms';
 
+console.log('⏳ Connecting to MongoDB...');
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB Connected');
@@ -23,10 +24,10 @@ mongoose.connect(MONGO_URI)
 
 // --- SECURITY MIDDLEWARE (The Gatekeeper) ---
 const protect = (req, res, next) => {
-    // Looks for 'Bearer <token>' in the Authorization header
-    const token = req.headers.authorization?.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) {
+    if (!token || token === 'null' || token === 'undefined') {
         return res.status(401).json({ error: 'Access denied. No token provided.' });
     }
 

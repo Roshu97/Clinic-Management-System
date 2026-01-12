@@ -11,6 +11,7 @@ if (!currentUser || currentUser.role !== 'receptionist') {
 // --- LOGOUT LOGIC ---
 function logout() {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     window.location.href = '../login.html';
 }
 
@@ -31,7 +32,11 @@ document.getElementById('patientForm').addEventListener('submit', async function
     };
 
     try {
-        const token = localStorage.getItem('token'); // Get token from localStorage
+        const token = localStorage.getItem('token'); 
+        if (!token) {
+            window.location.href = '../login.html';
+            return;
+        }
         const response = await fetch(`${API_URL}/patient/add`, {
             method: 'POST',
             headers: { 
@@ -112,11 +117,12 @@ async function generateBill(visitId, name, token) {
     if(!confirm(`Generate bill of $50 for ${name}?`)) return;
 
     try {
+        const token = localStorage.getItem('token');
         const res = await fetch(`${API_URL}/billing/create`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${currentUser.token}`  
+                'Authorization': `Bearer ${token}`  
             },
             body: JSON.stringify({ visitId: visitId, amount: 50.00 })
         });
@@ -164,5 +170,4 @@ function printBill(patientName, amount, token) {
 // Auto-load on startup
 window.onload = function() {
     fetchPendingBills();
-    renderRevenueChart();
 };
